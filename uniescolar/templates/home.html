@@ -28,11 +28,13 @@
                 {% if aulas %}
                     {%for aula in aulas%}
                         <tr>
-                            <td><a href="{% url 'book' aula.id %}">{{aula.id}}</a></td>
+                            <td><a href="{% url 'aula' aula.id %}">{{aula.id}}</a></td>
                             <td>{{aula.disciplina}}</td>
                             <td>{{aula.data}}</td>
                             <td>{{aula.inicio}}</td>
                             <td>{{aula.termino}}</td>
+                            <td>{{aula.aluno}}</td>
+                            <td>{{aula.professor}}</td>
                            
                             
                         </tr>
