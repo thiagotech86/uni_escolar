@@ -4,6 +4,8 @@ from django.contrib import admin
 
 # Create your models here.
 
+#criando e vendo a nova branch
+
 class Materia(models.Model):
     id=models.AutoField(primary_key=True)
     nome=models.CharField(max_length=50)
