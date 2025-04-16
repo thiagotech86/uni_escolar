@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import  Aula, Materia, Aluno
+from .models import  Aula, Aluno, Professor
 #teste de commit
 # Formulário de cadastro
 class SignUpForm(UserCreationForm):
@@ -62,7 +62,7 @@ class SignUpForm(UserCreationForm):
 
 class AddAulaForm(forms.ModelForm):
     
-    disciplina=forms.ModelChoiceField(Materia.objects.all()),
+    disciplina=forms.ModelChoiceField(Professor.objects.all()),
 
     descricao=forms.CharField(required=True,
     widget=forms.widgets.Textarea(
