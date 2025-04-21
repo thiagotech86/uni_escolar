@@ -1,26 +1,37 @@
 from django.db import models
 from django.utils import timezone
 
+def hora_inicio_padrao():
+    return timezone.datetime.strptime("08:00", "%H:%M").time()
+
+def hora_fim_padrao():
+    return timezone.datetime.strptime("09:00", "%H:%M").time()
+
 class Usuario(models.Model):
     cpf = models.CharField(max_length=11, primary_key=True)
-    nome = models.CharField(max_length=100)
-    email = models.EmailField(max_length=100)
+    nome = models.CharField(max_length=255)
+    email = models.EmailField()
     telefone = models.CharField(max_length=20)
 
     def __str__(self):
         return f"{self.nome} ({self.cpf})"
 
-class Responsavel(Usuario):
-    profissao = models.CharField(max_length=100)
+class Responsavel(models.Model):
+    cpf = models.OneToOneField(Usuario, on_delete=models.CASCADE, primary_key=True)
+    profissao = models.CharField(max_length=255)
 
     def __str__(self):
-        return f"Responsável: {self.nome}"
+        return f"Responsável: {self.cpf.nome}"
 
-class Professor(Usuario):
+
+class Professor(models.Model):
+    cpf = models.OneToOneField(Usuario, on_delete=models.CASCADE, primary_key=True)
     materia = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"Professor: {self.nome} - {self.materia}"
+        return f"Professor: {self.cpf.nome} - {self.materia}"
+
+
 
 class Aluno(models.Model):
     SEXO_CHOICES = [
@@ -58,8 +69,8 @@ class Aula(models.Model):
     local = models.CharField(max_length=100)
     disciplina = models.CharField(max_length=100)
     data_inicio = models.DateField(default=timezone.now)
-    hora_inicio = models.TimeField(default=lambda: timezone.datetime.strptime("08:00", "%H:%M").time())
-    hora_fim = models.TimeField(default=lambda: timezone.datetime.strptime("09:00", "%H:%M").time())
+    hora_inicio = models.TimeField(default=hora_inicio_padrao)
+    hora_fim = models.TimeField(default=hora_fim_padrao)
     aluno = models.ForeignKey(
         Aluno, on_delete=models.CASCADE, related_name="aulas"
     )
@@ -69,3 +80,4 @@ class Aula(models.Model):
 
     def __str__(self):
         return f"Aula {self.numero} - {self.disciplina}"
+    
