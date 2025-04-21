@@ -3,33 +3,33 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from .models import Aula
-from .forms import SignUpForm, AddAulaForm
+from .forms import SignUpForm, AddAulaForm, CustomLoginForm
+from django.contrib.auth.hashers import make_password
 
 # Create your views here.
 
-def home(request):
-
-    aulas=Aula.objects.all() # listar todos os livros (objetos) cadastrados.
-
-    if request.method=="POST": # Se o método request for post, valide login e senha, se não retorne a página home.
-        username=request.POST['usuario']
-        password=request.POST['senha']
-        #Autenticação
-        user=authenticate(
-            request,
-            username=username,
-            password=password
-        )
-        if user is not None: # condição após a validação
-            login(request,user)
-            messages.success(request,"Login realizado com sucesso!") # mensagem de confirmação de login
-            return redirect('home')
+def login_view(request):
+    if request.method == 'POST':
+        form = CustomLoginForm(request.POST)
+        if form.is_valid():
+            user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
+            if user is not None:
+                login(request, user)
+                return redirect('home')
+            else:
+                form.add_error(None, 'Usuário ou senha inválidos')
         else:
-            messages.error(request,"Erro na autenticação. Tente novamente!") # mensagem de erro de login
-            return redirect('home')
-
+            form.add_error(None, 'Erro no formulário. Tente novamente!')
     else:
-        return render(request,'home.html',{'aulas':aulas}) 
+        form = CustomLoginForm()
+
+    return render(request, 'uniescolar/login.html', {'form': form})
+
+
+def home(request):
+    aulas = Aula.objects.all()  # listar todas as aulas
+
+    return render(request, 'home.html', {'aulas': aulas})
 
 
 def logout_user(request):
@@ -40,25 +40,31 @@ def logout_user(request):
 
 
 def register_user(request):
-    if request.method=='POST': # Se a requisição for do tipo post...
-        user_form=SignUpForm(request.POST)
-        if user_form.is_valid(): # validaçã dos dados inseridos
-            user_form.save()
-            # Autenticação e login
-            username=user_form.cleaned_data['username']
-            password=user_form.cleaned_data['password1']
-            user=authenticate(
-                username=username,
-                password=password
+    if request.method == 'POST': 
+        user_form = SignUpForm(request.POST)
+        if user_form.is_valid(): 
+            user = user_form.save(commit=False)
+            user.senha = make_password(user_form.cleaned_data['senha'])
+            user.save()
 
+            cpf = user_form.cleaned_data['cpf']
+            senha = user_form.cleaned_data['senha']
+            user = authenticate(
+                request,
+                username=cpf,  # cuidado: precisa adaptar para seu authenticate aceitar CPF
+                password=senha
             )
-            login(request, user)
-            messages.success(request,'Login realizado com sucesso')
-            return redirect('home')
+            if user is not None:
+                login(request, user)
+                messages.success(request, 'Login realizado com sucesso')
+                return redirect('home')
+            else:
+                messages.error(request, 'Erro ao autenticar. Tente novamente.')
+
     else:
-        user_form=SignUpForm()
-        return render(request,"register.html",{'user_form':user_form})
-    return render(request,"register.html",{'user_form':user_form})
+        user_form = SignUpForm()
+        
+    return render(request, "register.html", {'user_form': user_form})
 
 def book_detail(request,id):
     if request.user.is_authenticated:

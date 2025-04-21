@@ -12,6 +12,7 @@ class Usuario(models.Model):
     nome = models.CharField(max_length=255)
     email = models.EmailField()
     telefone = models.CharField(max_length=20)
+    senha = models.CharField(max_length=255, default='default_password')
 
     def __str__(self):
         return f"{self.nome} ({self.cpf})"
