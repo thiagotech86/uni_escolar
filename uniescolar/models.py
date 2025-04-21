@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
+
 class Usuario(models.Model):
     cpf = models.CharField(max_length=11, primary_key=True)
     nome = models.CharField(max_length=100)
