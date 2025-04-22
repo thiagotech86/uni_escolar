@@ -1,5 +1,7 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
+from django.contrib import admin
 
 def hora_inicio_padrao():
     return timezone.datetime.strptime("08:00", "%H:%M").time()
@@ -8,7 +10,7 @@ def hora_fim_padrao():
     return timezone.datetime.strptime("09:00", "%H:%M").time()
 
 class Usuario(models.Model):
-    cpf = models.CharField(max_length=11, primary_key=True)
+    cpf = models.CharField(max_length=14, primary_key=True)
     nome = models.CharField(max_length=255)
     email = models.EmailField()
     telefone = models.CharField(max_length=20)
@@ -18,19 +20,22 @@ class Usuario(models.Model):
         return f"{self.nome} ({self.cpf})"
 
 class Responsavel(models.Model):
-    cpf = models.OneToOneField(Usuario, on_delete=models.CASCADE, primary_key=True)
+    CPF = models.CharField(max_length=14, primary_key=True, default='')
+    user=models.ForeignKey(
+        User, on_delete=models.CASCADE, default='', related_name="alunos"
+    )
     profissao = models.CharField(max_length=255)
 
     def __str__(self):
-        return f"Responsável: {self.cpf.nome}"
+        return f"{self.user}"
 
 
 class Professor(models.Model):
-    cpf = models.OneToOneField(Usuario, on_delete=models.CASCADE, primary_key=True)
+    nome = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, default='')
     materia = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"Professor: {self.cpf.nome} - {self.materia}"
+        return f"{self.nome}"
 
 
 

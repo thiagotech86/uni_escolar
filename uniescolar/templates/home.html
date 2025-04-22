@@ -24,11 +24,11 @@
                 {% if aulas %}
                     {% for aula in aulas %}
                         <tr>
-                            <td><a href="{% url 'aula_detail' aula.id %}">{{ aula.id }}</a></td>
+                            <td><a href="{% url 'aula' aula.id %}">{{ aula.id }}</a></td>
                             <td>{{ aula.disciplina }}</td>
-                            <td>{{ aula.data|date:"d/m/Y" }}</td> <!-- Formato de data -->
-                            <td>{{ aula.inicio|time:"H:i" }}</td> <!-- Formato de horário -->
-                            <td>{{ aula.termino|time:"H:i" }}</td> <!-- Formato de horário -->
+                            <td>{{ aula.data_inicio|date:"d/m/Y" }}</td> <!-- Formato de data -->
+                            <td>{{ aula.hora_inicio|time:"H:i" }}</td> <!-- Formato de horário -->
+                            <td>{{ aula.hora_fim|time:"H:i" }}</td> <!-- Formato de horário -->
                             <td>{{ aula.aluno }}</td>
                             <td>{{ aula.professor }}</td>
                         </tr>

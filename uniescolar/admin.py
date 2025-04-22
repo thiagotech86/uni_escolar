@@ -6,3 +6,4 @@ from django.contrib.auth.models import User
 admin.site.register(Aluno)
 admin.site.register(Aula)
 admin.site.register(Professor)
+admin.site.register(Responsavel)
