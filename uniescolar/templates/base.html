@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Uniescolar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Base styles */
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f3f4f6; 
+            color: #1f2937; /* Dark text */
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Card styles */
+        .bg-white {
+            background-color: #ffffff;
+            transition: background-color 0.3s ease;
+        }
+
+        
+        .text-gray-800 {
+            color: #1f2937;
+            transition: color 0.3s ease;
+        }
+        .text-gray-600 {
+            color: #4b5563;
+            transition: color 0.3s ease;
+        }
+        .text-gray-700 {
+            color: #374151;
+            transition: color 0.3s ease;
+            text-align: center; 
+        }
+
+        
+        input[type="text"],
+        input[type="password"],
+        select {
+            border-color: #d1d5db;
+            color: #1f2937;
+            background-color: #ffffff;
+            transition: border-color 0.3s ease, color 0.3s ease, background-color 0.3s ease;
+        }
+        input[type="text"]::placeholder,
+        input[type="password"]::placeholder,
+        select::placeholder {
+            color: #9ca3af;
+        }
+
+        
+        .bg-blue-500 {
+            background-color: #3b82f6;
+            transition: background-color 0.3s ease;
+        }
+        .hover\:bg-blue-700:hover {
+            background-color: #2563eb;
+        }
+
+        
+        body.dark-mode {
+            background-color: #121212; 
+            color: #e0e0e0; 
+        }
+        body.dark-mode .bg-white {
+            background-color: #1e1e1e; 
+        }
+        body.dark-mode .text-gray-800,
+        body.dark-mode .text-gray-700 {
+            color: #ffffff; 
+            text-align: center; 
+        }
+        body.dark-mode .text-gray-600 {
+            color: #b0b0b0; 
+        }
+        body.dark-mode input[type="text"],
+        body.dark-mode input[type="password"],
+        body.dark-mode select {
+            border-color: #5a5a5a;
+            color: #e0e0e0;
+            background-color: #2c2c2c;
+        }
+        body.dark-mode input[type="text"]::placeholder,
+        body.dark-mode input[type="password"]::placeholder,
+        body.dark-mode select::placeholder {
+            color: #a0a0a0;
+        }
+        body.dark-mode .bg-blue-500 {
+            background-color: #64b5f6; 
+        }
+        body.dark-mode .hover\:bg-blue-700:hover {
+            background-color: #42a5f5; 
+        }
+
+        /* Toggle switch styles */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        /* Rounded sliders */
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+        /* Dark mode slider styles */
+        body.dark-mode .slider {
+            background-color: #5a5a5a; 
+        }
+
+        body.dark-mode input:checked + .slider {
+            background-color: #64b5f6; 
+        }
+
+         body.dark-mode .slider:before {
+            background-color: #1e1e1e; 
+         }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center min-h-screen">
+
+    <div class="w-full max-w-md mt-4 px-8 flex justify-end items-center">
+        <span class="text-gray-700 dark-mode:text-gray-300 mr-2 text-sm font-bold" id="theme-label">Modo Escuro</span>
+        <label class="switch">
+            <input type="checkbox" id="theme-toggle">
+            <span class="slider round"></span>
+        </label>
+    </div>
+
+
+    <div class="w-full max-w-md mt-4 mb-auto">
+        <div class="bg-white shadow-md rounded-lg px-8 py-6">
+            <h2 class="text-2xl font-bold text-center text-gray-800 dark-mode:text-white mb-6">Uniescolar</h2>
+            <p class="text-center text-gray-600 dark-mode:text-gray-400 mb-6">Faça login na sua conta</p>
+
+            <form method="post" action="{% url 'home' %}">
+                {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="username" class="block text-gray-700 dark-mode:text-gray-300 text-sm font-bold mb-2">
+                            E-mail ou Usuário:
+                        </label>
+                        <input type="text" id="username" name="username" placeholder="Digite o e-mail ou usuário"
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline dark-mode:bg-gray-700 dark-mode:border-gray-600 dark-mode:text-gray-200 dark-mode:placeholder-gray-500" required>
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="password" class="block text-gray-700 dark-mode:text-gray-300 text-sm font-bold mb-2">
+                            Senha:
+                        </label>
+                        <input type="password" id="password" name="password" placeholder="Digite senha"
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline dark-mode:bg-gray-700 dark-mode:border-gray-600 dark-mode:text-gray-200 dark-mode:placeholder-gray-500" required>
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="userType" class="block text-gray-700 dark-mode:text-gray-300 text-sm font-bold mb-2">
+                            Usuário:
+                        </label>
+                        <select id="userType" name="userType"
+                                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-shadow-outline dark-mode:bg-gray-700 dark-mode:border-gray-600 dark-mode:text-gray-200">
+                            <option value="cliente">Cliente</option>
+                            <option value="professor">Professor</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center justify-center">
+                        <button type="submit"
+                                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline dark-mode:bg-blue-600 dark-mode:hover:bg-blue-500">
+                            Entrar
+                        </button>
+
+                    </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        const themeLabel = document.getElementById('theme-label');
+        const localStorageKey = 'themePreference';
+
+        // Function to apply the theme
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                body.classList.add('dark-mode');
+                themeToggle.checked = true; 
+                themeLabel.textContent = 'Modo Claro'; 
+            } else {
+                body.classList.remove('dark-mode');
+                themeToggle.checked = false; 
+                themeLabel.textContent = 'Modo Escuro'; 
+            }
+        }
+
+        
+        const savedTheme = localStorage.getItem(localStorageKey);
+        if (savedTheme) {
+            applyTheme(savedTheme);
+        } else {
+            
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                applyTheme('dark');
+            } else {
+                applyTheme('light');
+            }
+        }
+
+        
+        themeToggle.addEventListener('change', () => {
+            if (themeToggle.checked) {
+                applyTheme('dark');
+                localStorage.setItem(localStorageKey, 'dark');
+            } else {
+                applyTheme('light');
+                localStorage.setItem(localStorageKey, 'light');
+            }
+        });
+
+        
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (!localStorage.getItem(localStorageKey)) {
+                applyTheme(event.matches ? 'dark' : 'light');
+            }
+        });
+    </script>
+
+</body>
+
+</html>
