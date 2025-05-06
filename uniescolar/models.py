@@ -37,8 +37,12 @@ class Professor(models.Model):
     def __str__(self):
         return f"{self.nome}"
 
-
-
+class Disciplina(models.Model):
+    nome = models.CharField(max_length=100)
+    
+    def __str__(self):
+        return f"{self.nome}"
+    
 class Aluno(models.Model):
     SEXO_CHOICES = [
         ('M', 'Masculino'),
@@ -47,11 +51,11 @@ class Aluno(models.Model):
     ]
 
     id = models.AutoField(primary_key=True)
-    nome = models.CharField(max_length=100)
-    sexo = models.CharField(max_length=1, choices=SEXO_CHOICES)
+    nome = models.CharField(max_length=200)
+    sexo = models.CharField(max_length=30, choices=SEXO_CHOICES)
     data_nascimento = models.DateField(default=timezone.now)
     responsavel = models.ForeignKey(
-        Responsavel, on_delete=models.CASCADE, related_name="alunos"
+        Responsavel, on_delete=models.CASCADE, related_name="responsavel"
     )
 
     def __str__(self):
@@ -73,7 +77,7 @@ class Aula(models.Model):
     id = models.AutoField(primary_key=True)
     numero = models.IntegerField()
     local = models.CharField(max_length=100)
-    disciplina = models.CharField(max_length=100)
+    disciplina = models.ForeignKey(Disciplina, on_delete=models.CASCADE, related_name="disciplina")
     data_inicio = models.DateField(default=timezone.now)
     hora_inicio = models.TimeField(default=hora_inicio_padrao)
     hora_fim = models.TimeField(default=hora_fim_padrao)
@@ -85,5 +89,5 @@ class Aula(models.Model):
     )
 
     def __str__(self):
-        return f"Aula {self.numero} - {self.disciplina}"
+        return f"Aula {self.disciplina}"
     

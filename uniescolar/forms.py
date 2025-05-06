@@ -1,5 +1,5 @@
 from django import forms
-from .models import Aula, Aluno, Professor, Usuario
+from .models import Aula, Aluno, Professor, Usuario, Disciplina
 
 from django.contrib.auth.forms import AuthenticationForm
 
@@ -15,13 +15,7 @@ class SignUpForm(forms.ModelForm):
 
 
 class AddAulaForm(forms.ModelForm):
-    numero = forms.IntegerField(
-        required=True,
-        widget=forms.NumberInput(
-            attrs={"placeholder": "Número da aula", "class": "form-control"}
-        ),
-        label=""
-    )
+
 
     local = forms.CharField(
         required=True,
@@ -31,13 +25,14 @@ class AddAulaForm(forms.ModelForm):
         label=""
     )
 
-    disciplina = forms.CharField(
-        required=True,
-        widget=forms.TextInput(
-            attrs={"placeholder": "Disciplina", "class": "form-control"}
+    disciplina = forms.ModelChoiceField(
+        queryset=Disciplina.objects.all(),
+        widget=forms.Select(
+            attrs={"class": "form-control"}
         ),
-        label=""
+        label="Disciplina"
     )
+    
 
     data_inicio = forms.DateField(
         required=True,
@@ -81,4 +76,4 @@ class AddAulaForm(forms.ModelForm):
 
     class Meta:
         model = Aula
-        fields = ['numero', 'local', 'disciplina', 'data_inicio', 'hora_inicio', 'hora_fim', 'aluno', 'professor']
+        fields = ['local', 'disciplina', 'aluno', 'professor','data_inicio', 'hora_inicio', 'hora_fim', ]
