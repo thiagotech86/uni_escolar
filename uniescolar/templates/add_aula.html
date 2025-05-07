@@ -1,15 +1,55 @@
-{%extends 'base.html'%}
+{% extends 'base.html' %}
 
-{%block content%}
-    <div class="col-md-6 offset-md-3">
-        <h2 class="text-center">Cadastrar Aula</h2>
-        <hr>
-        <form method="post" action="{%url 'add_aula'%}" >
-            {%csrf_token%}
-            {{form.as_p}}
-            <br>
-            <button type="submit" class="btn btn-success">Adicionar</button>
-        </form>
-        
+{% block title %}Cadastrar Nova Aula - Universo Escolar{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-xl mx-auto">
+        <div class="form-card shadow-xl rounded-lg px-8 py-10">
+            <h2 class="text-2xl font-semibold text-content mb-6 text-center">Cadastrar Nova Aula</h2>
+            
+            <form method="post" action="{% url 'add_aula' %}">
+                {% csrf_token %}
+
+                {# Renderizando o formulário com as_p. #}
+                 {% for field in form %}
+                    <div class="mb-5">
+                        <label for="{{ field.id_for_label }}" class="block text-label text-sm font-bold mb-2">
+                            {{ field.label }}
+                        </label>
+                        {{ field }} 
+                        {% if field.help_text %}
+                            <p class="text-xs text-muted mt-1">{{ field.help_text|safe }}</p>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <div class="mt-8 flex items-center justify-end space-x-3">
+                    <a href="{% url 'home' %}" class="btn-secondary-custom text-center px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity duration-150">
+                        Cancelar
+                    </a>
+                    <button type="submit"
+                            class="btn-success-custom text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline hover:opacity-90 transition-opacity duration-150">
+                        Adicionar Aula
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-{%endblock%}
+</div>
+
+<script>
+// Script para adicionar classes Tailwind 
+document.addEventListener('DOMContentLoaded', function() {
+    const formInputs = document.querySelectorAll('.form-card form input, .form-card form select, .form-card form textarea');
+    formInputs.forEach(function(input) {
+        if (input.type !== 'checkbox' && input.type !== 'radio' && input.type !== 'file' && input.type !== 'submit' && input.type !== 'button' && input.type !== 'reset') {
+            input.classList.add('shadow-sm', 'appearance-none', 'border', 'rounded', 'w-full', 'py-3', 'px-4', 'leading-tight', 'focus:outline-none', 'focus:ring-2', 'focus:ring-blue-500', 'focus:border-transparent');
+        }
+    });
+});
+</script>
+{% endblock %}

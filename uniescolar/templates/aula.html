@@ -1,24 +1,54 @@
-{%extends 'base.html' %}
+{% extends 'base.html' %}
 
-{%block content%}
-    <h2 class="text-center">Aula - {{aula.disciplina}}</h2>
-    <hr>
-    <div class="col-md-6 offset-md-3" >
+{% block title %}Detalhes da Aula: {{ aula.disciplina }} - Universo Escolar{% endblock %}
 
-            <div class="card-body text-center">
-                <h5 class="card-title">Descrição</h5>
-                <p>{{aula.descricao}}</p>
-                <hr>
-                
-
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
+        <div class="px-6 py-8">
+            <h2 class="text-3xl font-bold text-content mb-2 text-center">Aula: {{ aula.disciplina }}</h2>
+            <p class="text-center text-muted mb-6">Detalhes da aula agendada</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <h5 class="text-sm font-semibold text-label uppercase">Disciplina:</h5>
+                    <p class="text-content text-lg">{{ aula.disciplina }}</p>
+                </div>
+                <hr class="dark:border-gray-700">
+                <div>
+                    <h5 class="text-sm font-semibold text-label uppercase">Descrição:</h5>
+                    <p class="text-content text-lg">{{ aula.descricao|linebreaksbr }}</p>
+                </div>
+                <hr class="dark:border-gray-700">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <h5 class="text-sm font-semibold text-label uppercase">Data:</h5>
+                        <p class="text-content text-lg">{{ aula.data_inicio|date:"d/m/Y" }}</p>
+                    </div>
+                    <div>
+                        <h5 class="text-sm font-semibold text-label uppercase">Horário:</h5>
+                        <p class="text-content text-lg">{{ aula.hora_inicio|time:"H:i" }} - {{ aula.hora_fim|time:"H:i" }}</p>
+                    </div>
+                </div>
+                <hr class="dark:border-gray-700">
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <h5 class="text-sm font-semibold text-label uppercase">Aluno:</h5>
+                        <p class="text-content text-lg">{{ aula.aluno }}</p>
+                    </div>
+                    <div>
+                        <h5 class="text-sm font-semibold text-label uppercase">Professor:</h5>
+                        <p class="text-content text-lg">{{ aula.professor }}</p>
+                    </div>
+                </div>
             </div>
-
         </div>
-        <div class="offset-md-4">
-        <a href="{%url 'home'%}" class="btn btn-secondary">Voltar</a>
-        <a href="{%url 'update_book' book.id %}" class="btn btn-primary">Editar</a>
-        <a href="{%url 'delete_book' book.id %}" class="btn btn-danger">Excluir</a>
+        <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
+            <a href="{% url 'home' %}" class="btn-secondary-custom text-center w-full sm:w-auto px-4 py-2 rounded-md font-medium">Voltar</a>
+            {# Assumindo que 'book.id' deveria ser 'aula.id' para update e delete #}
+            <a href="{% url 'update_aula' aula.id %}" class="btn-primary-custom text-white text-center w-full sm:w-auto px-4 py-2 rounded-md font-medium">Editar</a>
+            <a href="{% url 'delete_aula' aula.id %}" class="btn-danger-custom text-white text-center w-full sm:w-auto px-4 py-2 rounded-md font-medium">Excluir</a>
         </div>
     </div>
-   
-{%endblock%}
+</div>
+{% endblock %}

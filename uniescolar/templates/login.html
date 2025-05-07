@@ -1,13 +1,57 @@
 {% extends 'base.html' %}
 
+{% block title %}Login - Universo Escolar{% endblock %}
+
 {% block content %}
-<div class="login-container">
-    <h2>Login</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}  <!-- Exibe os campos do formulário -->
-        <button type="submit">Entrar</button>
-    </form>
-    <p>Não tem conta? <a href="{% url 'register' %}">Cadastre-se</a></p>  <!-- Caso tenha uma página de registro -->
+<div class="flex justify-center items-center min-h-[calc(100vh-150px)] py-8"> {# Ajuste min-h conforme altura da navbar/footer #}
+    <div class="w-full max-w-md">
+        <div class="form-card shadow-xl rounded-lg px-8 py-10">
+            <h2 class="text-3xl font-bold text-center-label text-content mb-2">Login</h2>
+            <p class="text-center text-muted mb-8">Acesse sua conta Uniescolar</p>
+
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+                
+                {# Para um controle mais fino, renderize campo a campo. #}
+                {% for field in form %}
+                    <div class="mb-5">
+                        <label for="{{ field.id_for_label }}" class="block text-label text-sm font-bold mb-2">
+                            {{ field.label }}
+                        </label>
+                        {{ field }} {# Renderiza o widget do campo #}
+                        {% if field.help_text %}
+                            <p class="text-xs text-muted mt-1">{{ field.help_text|safe }}</p>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                
+            
+                <div class="mt-8 flex items-center justify-center">
+                    <button type="submit"
+                            class="btn-primary-custom text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline w-full hover:opacity-90 transition-opacity duration-150">
+                        Entrar
+                    </button>
+                </div>
+            </form>
+            <p class="text-center text-muted mt-6 text-sm">
+                Não tem uma conta? 
+                <a href="{% url 'register' %}" class="font-medium text-blue-600 dark:text-blue-400 hover:underline">Cadastre-se</a>
+            </p>
+        </div>
+    </div>
 </div>
+
+<script>
+// Pequeno script para adicionar classes Tailwind
+document.addEventListener('DOMContentLoaded', function() {
+    const formInputs = document.querySelectorAll('.form-card form input[type="text"], .form-card form input[type="password"], .form-card form input[type="email"], .form-card form select');
+    formInputs.forEach(function(input) {
+        input.classList.add('shadow-sm', 'appearance-none', 'border', 'rounded', 'w-full', 'py-3', 'px-4', 'leading-tight', 'focus:outline-none', 'focus:ring-2', 'focus:ring-blue-500', 'focus:border-transparent');
+        
+    });
+});
+</script>
 {% endblock %}

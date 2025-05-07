@@ -1,13 +1,55 @@
-{%extends 'base.html' %}
+{% extends 'base.html' %}
 
-{%block content%}
-    <h2 class="text-center">Cadastro de usuário</h2>
-    <hr>
-    <form method="post">
-        {%csrf_token%}
+{% block title %}Cadastro - Universo Escolar{% endblock %}
 
-       {{user_form.as_p}}
-    <button type="submit", class="btn btn-primary">Cadastrar</button> 
-    </form>
-    
-{%endblock%}
+{% block content %}
+<div class="flex justify-center items-center min-h-[calc(100vh-150px)] py-8">
+    <div class="w-full max-w-md">
+        <div class="form-card shadow-xl rounded-lg px-8 py-10">
+            <h2 class="text-3xl font-bold text-center-label text-content mb-2">Crie sua Conta</h2>
+            <p class="text-center text-muted mb-8">É rápido e fácil!</p>
+
+            <form method="post" action="{% url 'register' %}"> {# Certifique-se que a action está correta #}
+                {% csrf_token %}
+
+                {# Renderizando o formulário com as_p. #}
+                {% for field in user_form %}
+                    <div class="mb-5">
+                        <label for="{{ field.id_for_label }}" class="block text-label text-sm font-bold mb-2">
+                            {{ field.label }}
+                        </label>
+                        {{ field }} 
+                         {% if field.help_text %}
+                            <p class="text-xs text-muted mt-1">{{ field.help_text|safe }}</p>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <div class="mt-8 flex items-center justify-center">
+                    <button type="submit"
+                            class="btn-primary-custom text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline w-full hover:opacity-90 transition-opacity duration-150">
+                        Cadastrar
+                    </button>
+                </div>
+            </form>
+             <p class="text-center text-muted mt-6 text-sm">
+                Já tem uma conta? 
+                <a href="{% url 'login' %}" class="font-medium text-blue-600 dark:text-blue-400 hover:underline">Faça Login</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+// Script para adicionar classes Tailwind aos campos renderizados por form.as_p
+document.addEventListener('DOMContentLoaded', function() {
+    const formInputs = document.querySelectorAll('.form-card form input[type="text"], .form-card form input[type="password"], .form-card form input[type="email"], .form-card form select');
+    formInputs.forEach(function(input) {
+        input.classList.add('shadow-sm', 'appearance-none', 'border', 'rounded', 'w-full', 'py-3', 'px-4', 'leading-tight', 'focus:outline-none', 'focus:ring-2', 'focus:ring-blue-500', 'focus:border-transparent');
+    });
+});
+</script>
+{% endblock %}
