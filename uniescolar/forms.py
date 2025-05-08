@@ -1,7 +1,19 @@
 from django import forms
 from .models import Aula, Aluno, Professor, Usuario, Disciplina
-
+from datetime import time, timedelta, datetime
 from django.contrib.auth.forms import AuthenticationForm
+
+
+def gerar_horas_meia_em_meia():
+    horarios = []
+    hora = datetime.strptime("06:00", "%H:%M")
+    fim = datetime.strptime("22:00", "%H:%M")
+    while hora <= fim:
+        horario = hora.time()
+        horarios.append((horario.strftime("%H:%M"), horario.strftime("%H:%M")))
+        hora += timedelta(minutes=30)
+    return horarios
+
 
 class CustomLoginForm(AuthenticationForm):
     cpf = forms.CharField(label='cpf', max_length=100)
@@ -42,20 +54,20 @@ class AddAulaForm(forms.ModelForm):
         label=""
     )
 
-    hora_inicio = forms.TimeField(
-        required=True,
-        widget=forms.TimeInput(
-            attrs={"placeholder": "Hora de início", "class": "form-control", "type": "time"}
-        ),
-        label=""
+    hora_inicio = forms.ChoiceField(
+        choices=gerar_horas_meia_em_meia(),
+        widget=forms.Select(attrs={
+            "class": "form-control"
+        }),
+        label="Hora de Início"
     )
 
-    hora_fim = forms.TimeField(
-        required=True,
-        widget=forms.TimeInput(
-            attrs={"placeholder": "Hora de fim", "class": "form-control", "type": "time"}
-        ),
-        label=""
+    hora_fim = forms.ChoiceField(
+        choices=gerar_horas_meia_em_meia(),
+        widget=forms.Select(attrs={
+            "class": "form-control"
+        }),
+        label="Hora de final"
     )
 
     aluno = forms.ModelChoiceField(

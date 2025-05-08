@@ -75,12 +75,12 @@ class PacoteHora(models.Model):
 
 class Aula(models.Model):
     id = models.AutoField(primary_key=True)
-    numero = models.IntegerField()
+    numero = models.CharField(max_length=100)
     local = models.CharField(max_length=100)
     disciplina = models.ForeignKey(Disciplina, on_delete=models.CASCADE, related_name="disciplina")
     data_inicio = models.DateField(default=timezone.now)
-    hora_inicio = models.TimeField(default=hora_inicio_padrao)
-    hora_fim = models.TimeField(default=hora_fim_padrao)
+    hora_inicio = models.CharField(max_length=100)
+    hora_fim = models.CharField(max_length=100)
     aluno = models.ForeignKey(
         Aluno, on_delete=models.CASCADE, related_name="aulas"
     )
