@@ -58,6 +58,20 @@ def logout_user(request):
     return redirect('home')
 
 
+def total_aulas(request,id):
+    if request.user.is_authenticated:
+        total=Aula.objects.count()
+        
+        return render (request,'home.html',{'total':total})
+    else:
+        messages.error(request,'Você precisa estar logado')
+        return redirect('home')
+    
+    
+
+
+
+
 
 def register_user(request):
     if request.method == 'POST': 

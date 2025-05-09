@@ -74,6 +74,11 @@ class AddAulaForm(forms.ModelForm):
         label="Professor"
     )
 
+    descricao=forms.CharField(required=True,
+    widget=forms.widgets.Textarea(
+        attrs={"placeholder":"Descrição", "class":"form-control"}
+    ),label="Descrição da aula")
+
     class Meta:
         model = Aula
-        fields = ['local', 'disciplina', 'aluno', 'professor','data_inicio', 'hora_inicio', 'hora_fim', ]
+        fields = ['local', 'disciplina', 'aluno', 'professor','data_inicio', 'hora_inicio', 'hora_fim', 'descricao' ]

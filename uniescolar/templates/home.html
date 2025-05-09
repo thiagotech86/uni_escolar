@@ -4,6 +4,8 @@
 
     {% if user.is_authenticated %}
         <h2 class="text-center">Aulas</h2>
+        <h4>Total de hora/aula:{{total}}</h4>
+
         <hr>
         
         <!-- Criando tabela de visualização das aulas -->
@@ -18,6 +20,7 @@
                     <th>Aluno</th>
                     <th>Professor</th>
                 </tr>
+
             </thead>
 
             <tbody>
@@ -32,8 +35,11 @@
                             <td>{{ aula.aluno }}</td>
                             <td>{{ aula.professor }}</td>
                         </tr>
+                        
                     {% endfor %}
+                    
                 {% else %}
+                
                     <tr>
                         <td colspan="7" class="text-center">Nenhuma aula disponível.</td>
                     </tr>

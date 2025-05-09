@@ -49,7 +49,6 @@ class Aluno(models.Model):
         ('F', 'Feminino'),
         ('O', 'Outro'),
     ]
-
     id = models.AutoField(primary_key=True)
     nome = models.CharField(max_length=200)
     sexo = models.CharField(max_length=30, choices=SEXO_CHOICES)
@@ -65,17 +64,17 @@ class PacoteHora(models.Model):
     id = models.AutoField(primary_key=True)
     horas_contratadas = models.IntegerField()
     valor_hora = models.DecimalField(max_digits=8, decimal_places=2)
-    saldo = models.IntegerField()
+    data_contrato = models.DateField(default=timezone.now)
     responsavel = models.ForeignKey(
         Responsavel, on_delete=models.CASCADE, related_name="pacotes_hora"
     )
 
     def __str__(self):
-        return f"Pacote #{self.id} - Saldo: {self.saldo}h"
+        return f"{self.responsavel} - Data: {self.data_contrato} - {self.horas_contratadas} h "
 
 class Aula(models.Model):
     id = models.AutoField(primary_key=True)
-    numero = models.IntegerField()
+    
     local = models.CharField(max_length=100)
     disciplina = models.ForeignKey(Disciplina, on_delete=models.CASCADE, related_name="disciplina")
     data_inicio = models.DateField(default=timezone.now)
@@ -85,8 +84,9 @@ class Aula(models.Model):
         Aluno, on_delete=models.CASCADE, related_name="aulas"
     )
     professor = models.ForeignKey(
-        Professor, on_delete=models.CASCADE, related_name="aulas"
+        Professor, on_delete=models.CASCADE, related_name="professor"
     )
+    descricao=models.CharField(max_length=200)
 
     def __str__(self):
         return f"Aula {self.disciplina}"
