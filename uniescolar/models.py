@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.contrib import admin
+from datetime import datetime, date
 
 def hora_inicio_padrao():
     return timezone.datetime.strptime("08:00", "%H:%M").time()
@@ -56,6 +57,18 @@ class Aluno(models.Model):
     responsavel = models.ForeignKey(
         Responsavel, on_delete=models.CASCADE, related_name="responsavel"
     )
+
+    def horas_contratadas(self):
+        return sum(pacote.horas_contratadas for pacote in self.responsavel.pacotes_hora.all())
+
+    def horas_utilizadas(self):
+        total = 0
+        for aula in self.aulas.all():  # usa related_name="aulas" em Aula.aluno
+            if aula.hora_inicio and aula.hora_fim:
+                inicio = datetime.combine(date.today(), aula.hora_inicio)
+                fim = datetime.combine(date.today(), aula.hora_fim)
+                total += (fim - inicio).total_seconds() / 3600
+        return round(total, 2)
 
     def __str__(self):
         return self.nome

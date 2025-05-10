@@ -6,6 +6,7 @@ from .models import Aula
 from .forms import SignUpForm, AddAulaForm, CustomLoginForm
 from django.contrib.auth.hashers import make_password
 from datetime import datetime, timedelta
+from .models import Aluno
 
 # Create your views here.
 
@@ -45,7 +46,17 @@ def home(request):
 
     total_horas = round(duracao.total_seconds() / 3600, 2)  # calcular o total de horas
 
-    return render(request, 'home.html', {'aulas': aulas, 'total': round(total_horas, 2)})
+        # Dicionário com nome do aluno -> horas contratadas
+    horas_contratadas_aluno = {}
+    for aluno in Aluno.objects.all():
+           horas_contratadas_aluno[aluno.nome] = aluno.horas_contratadas()
+
+    return render(request, 'home.html', {
+    'aulas': aulas,
+    'total': round(total.total_seconds() / 3600, 2),
+    'horas_contratadas_aluno': horas_contratadas_aluno,
+    'total_contratado_todos': sum(horas_contratadas_aluno.values()),
+})
 
 
     if request.method=="POST": # Se o método request for post, valide login e senha, se não retorne a página home.
