@@ -5,6 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import Aula
 from .forms import SignUpForm, AddAulaForm, CustomLoginForm
 from django.contrib.auth.hashers import make_password
+from datetime import datetime, timedelta
 
 # Create your views here.
 
@@ -30,6 +31,22 @@ def login_view(request):
 def home(request):
 
     aulas=Aula.objects.all() 
+
+    total = timedelta()  # total acumulado de horas
+
+    # Adicionando a duração das aulas
+    for aula in aulas:
+        if aula.hora_inicio and aula.hora_fim:
+            inicio = datetime.combine(datetime.today(), aula.hora_inicio)
+            fim = datetime.combine(datetime.today(), aula.hora_fim)
+            duracao = fim - inicio
+            total += duracao
+            aula.duracao = round(duracao.total_seconds() / 3600, 2)  # em horas
+
+    total_horas = round(duracao.total_seconds() / 3600, 2)  # calcular o total de horas
+
+    return render(request, 'home.html', {'aulas': aulas, 'total': round(total_horas, 2)})
+
 
     if request.method=="POST": # Se o método request for post, valide login e senha, se não retorne a página home.
         username=request.POST['usuario']
@@ -115,7 +132,7 @@ def add_aula(request):
         if request.method == "POST":
             if form.is_valid():
                 form.save()
-                messages.success(request, 'Livro adicionado com sucesso!')
+                messages.success(request, 'Aula adicionado com sucesso!')
                 return redirect('home')
         return render(request, 'add_aula.html', {'form':form})
     else:
@@ -130,7 +147,22 @@ def aula_detail(request,id):
         messages.error(request,'Você precisa estar logado')
         return redirect('home')
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
+@require_POST
+@csrf_exempt  # se não quiser usar isso, certifique-se de que o CSRF token está presente no JS
+def excluir_aula(request, aula_id):
+    if request.user.is_authenticated:
+        try:
+            aula = Aula.objects.get(id=aula_id)
+            aula.delete()
+            return JsonResponse({'status': 'ok'})
+        except Aula.DoesNotExist:
+            return JsonResponse({'status': 'erro', 'mensagem': 'Aula não encontrada'}, status=404)
+    else:
+        return JsonResponse({'status': 'erro', 'mensagem': 'Usuário não autenticado'}, status=401)
 
 
 
