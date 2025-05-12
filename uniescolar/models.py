@@ -1,39 +1,121 @@
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import User
 from django.contrib import admin
+from datetime import datetime, date
 
-# Create your models here.
+def hora_inicio_padrao():
+    return timezone.datetime.strptime("08:00", "%H:%M").time()
 
-class Materia(models.Model):
-    id=models.AutoField(primary_key=True)
-    nome=models.CharField(max_length=50)
-    def __str__(self): # Função para retornar uma mensagem espefícia ao inves de mensagens da memória.
-        return (f'{self.nome}') 
+def hora_fim_padrao():
+    return timezone.datetime.strptime("09:00", "%H:%M").time()
+
+class Usuario(models.Model):
+    cpf = models.CharField(max_length=14, primary_key=True)
+    nome = models.CharField(max_length=255)
+    email = models.EmailField()
+    telefone = models.CharField(max_length=20)
+    senha = models.CharField(max_length=255, default='default_password')
+
+    def __str__(self):
+        return f"{self.nome} ({self.cpf})"
+
+class Responsavel(models.Model):
+    CPF = models.CharField(max_length=14, primary_key=True, default='')
+    user=models.ForeignKey(
+        User, on_delete=models.CASCADE, default='', related_name="alunos"
+    )
+    profissao = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.user}"
+
+
+class Professor(models.Model):
+    nome = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, default='')
+    materia = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.nome}"
+
+class Disciplina(models.Model):
+    nome = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.nome}"
 
 class Aluno(models.Model):
-    id=models.AutoField(primary_key=True)
-    nome=models.CharField(max_length=50)
-    def __str__(self): # Função para retornar uma mensagem espefícia ao inves de mensagens da memória.
-        return (f'{self.nome}') 
-    
-class Professor(models.Model):
-    id=models.AutoField(primary_key=True)
-    nome=models.CharField(max_length=50)
-    def __str__(self): # Função para retornar uma mensagem espefícia ao inves de mensagens da memória.
-        return (f'{self.nome}') 
-    
-class Aula(models.Model):
-    
-    created_at=models.DateTimeField(auto_now_add=True) # data de criação do casdastro.
-    disciplina=models.ForeignKey(Materia, on_delete=models.PROTECT, related_name="aula_disciplina")
-    descricao=models.CharField(max_length=200)
-    data=models.DateField()
-    inicio=models.TimeField(max_length=30)
-    termino=models.TimeField()
-    aluno=models.ForeignKey(Aluno,on_delete=models.SET_NULL, null=True, blank=True )
-    professor=models.ForeignKey(Professor,on_delete=models.SET_NULL, null=True, blank=True )
-    criado_por=models.ForeignKey(User,on_delete=models.SET_NULL, null=True, blank=True ) # Chave estrangeira 
-    def __str__(self): # Função para retornar uma mensagem espefícia ao inves de mensagens da memória.
-        return (f'Aula de {self.disciplina}- {self.data}') 
-    
+    SEXO_CHOICES = [
+        ('M', 'Masculino'),
+        ('F', 'Feminino'),
+        ('O', 'Outro'),
+    ]
+    id = models.AutoField(primary_key=True)
+    nome = models.CharField(max_length=200)
+    sexo = models.CharField(
+        max_length=30,
+        choices=SEXO_CHOICES,
+        null=True,  # ADICIONADO
+        blank=True  # ADICIONADO
+    )
+    data_nascimento = models.DateField(default=timezone.now)
+    responsavel = models.ForeignKey(
+        Responsavel,
+        on_delete=models.CASCADE,
+        related_name="responsavel",
+        null=True,  # ADICIONADO
+        blank=True  # ADICIONADO
+    )
 
+    def horas_contratadas(self):
+        return sum(pacote.horas_contratadas for pacote in self.responsavel.pacotes_hora.all())
+
+    def horas_utilizadas(self):
+        total = 0
+        for aula in self.aulas.all():  # usa related_name="aulas" em Aula.aluno
+            if aula.hora_inicio and aula.hora_fim:
+                inicio = datetime.combine(date.today(), aula.hora_inicio)
+                fim = datetime.combine(date.today(), aula.hora_fim)
+                total += (fim - inicio).total_seconds() / 3600
+        return round(total, 2)
+
+    def __str__(self):
+        return self.nome
+
+class PacoteHora(models.Model):
+    id = models.AutoField(primary_key=True)
+    horas_contratadas = models.IntegerField()
+    valor_hora = models.DecimalField(max_digits=8, decimal_places=2)
+    data_contrato = models.DateField(default=timezone.now)
+    responsavel = models.ForeignKey(
+        Responsavel, on_delete=models.CASCADE, related_name="pacotes_hora"
+    )
+
+    def __str__(self):
+        return f"{self.responsavel} - Data: {self.data_contrato} - {self.horas_contratadas} h "
+
+class Aula(models.Model):
+    id = models.AutoField(primary_key=True)
+    local = models.CharField(
+        max_length=100,
+        null=True,  # ADICIONADO
+        blank=True  # ADICIONADO
+    )
+    disciplina = models.ForeignKey(Disciplina, on_delete=models.CASCADE, related_name="disciplina")
+    data_inicio = models.DateField(default=timezone.now)
+    hora_inicio = models.TimeField(default=hora_inicio_padrao) # Se estas funções padrão estiverem OK
+    hora_fim = models.TimeField(default=hora_fim_padrao)     # Se estas funções padrão estiverem OK
+    aluno = models.ForeignKey(
+        Aluno, on_delete=models.CASCADE, related_name="aulas"
+    )
+    professor = models.ForeignKey(
+        Professor,
+        on_delete=models.CASCADE,
+        related_name="professor",
+        null=True,  # ADICIONAR
+        blank=True  # ADICIONAR
+    )
+    descricao = models.CharField(max_length=200) # Se este campo também for novo e non-nullable, adicione null=True, blank=True
+
+    def __str__(self):
+        return f"Aula {self.disciplina}"
