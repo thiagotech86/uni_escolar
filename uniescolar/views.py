@@ -9,24 +9,6 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from .models import Aula, Aluno, Professor 
 from datetime import datetime, timedelta, date 
-from .models import Aula
-from .forms import SignUpForm, AddAulaForm, CustomLoginForm
-from django.contrib.auth.hashers import make_password
-from datetime import datetime, timedelta
-from .models import Aluno
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
-from .models import Professor, Aula 
-from .forms import AddAulaForm
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout 
-from django.contrib import messages
-from .models import Aula, Aluno, Professor 
-from .forms import SignUpForm, AddAulaForm, CustomLoginForm
-from django.contrib.auth.hashers import make_password
-from datetime import datetime, timedelta, date 
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse # Para excluir_aula
 from django.views.decorators.csrf import csrf_exempt # Para excluir_aula
 from django.views.decorators.http import require_POST # Para excluir_aula
@@ -116,6 +98,7 @@ def home(request):
                 horas_contratadas_por_aluno[aluno_obj.nome] = 0.0
                 
         total_contratado_geral = sum(horas_contratadas_por_aluno.values())
+
 
 
     context = {
