@@ -3,60 +3,57 @@
 {% block title %}Detalhes da Aula: {{ aula.disciplina }} - Universo Escolar{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
+<div class="container mx-auto px-4 py-8 font-inter">
     
-    <div class="max-w-2xl mx-auto bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
+    <div class="max-w-2xl mx-auto bg-white dark:bg-gray-900 shadow-xl rounded-lg overflow-hidden">
         <div class="px-6 py-8">
-           
-            <h2 class="text-3xl font-bold text-content mb-2 text-center">Aula: {{ aula.disciplina }}</h2>
-            <p class="text-center text-muted mb-6">Detalhes da aula agendada</p>
+            
+            <h2 class="text-3xl font-bold text-black dark:text-white mb-2 text-center">Aula: {{ aula.disciplina }}</h2>
+            <p class="text-center text-gray-700 dark:text-gray-300 mb-6">Detalhes da aula agendada</p>
             
             <div class="space-y-4">
                 {# Seção para exibir a disciplina #}
                 <div>
-                    <h5 class="text-sm font-semibold text-label uppercase">Disciplina:</h5>
-                    <p class="text-content text-lg">{{ aula.disciplina }}</p>
+                    <h5 class="text-sm font-semibold text-gray-800 dark:text-gray-100 uppercase">Disciplina:</h5>
+                    <p class="text-black dark:text-white text-lg">{{ aula.disciplina }}</p>
                 </div>
-                <hr class="dark:border-gray-700">
+                <hr class="border-gray-300 dark:border-gray-700">
 
                 {# Seção para exibir a descrição da aula, com quebras de linha. #}
                 <div>
-                    <h5 class="text-sm font-semibold text-label uppercase">Descrição:</h5>
-                    <p class="text-content text-lg">{{ aula.descricao|linebreaksbr }}</p>
+                    <h5 class="text-sm font-semibold text-gray-800 dark:text-gray-100 uppercase">Descrição:</h5>
+                    <p class="text-black dark:text-white text-lg">{{ aula.descricao|linebreaksbr }}</p>
                 </div>
-                <hr class="dark:border-gray-700">
+                <hr class="border-gray-300 dark:border-gray-700">
 
                 {# Grid para exibir Data e Horário lado a lado em telas maiores. #}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <h5 class="text-sm font-semibold text-label uppercase">Data:</h5>
-                        
-                        <p class="text-content text-lg">{{ aula.data_inicio|date:"d/m/Y" }}</p>
+                        <h5 class="text-sm font-semibold text-gray-800 dark:text-gray-100 uppercase">Data:</h5>
+                        <p class="text-black dark:text-white text-lg">{{ aula.data_inicio|date:"d/m/Y" }}</p>
                     </div>
                     <div>
-                        <h5 class="text-sm font-semibold text-label uppercase">Horário:</h5>
-                       
-                        <p class="text-content text-lg">{{ aula.hora_inicio|time:"H:i" }} - {{ aula.hora_fim|time:"H:i" }}</p>
+                        <h5 class="text-sm font-semibold text-gray-800 dark:text-gray-100 uppercase">Horário:</h5>
+                        <p class="text-black dark:text-white text-lg">{{ aula.hora_inicio|time:"H:i" }} - {{ aula.hora_fim|time:"H:i" }}</p>
                     </div>
                 </div>
-                <hr class="dark:border-gray-700">
-
-            
+                <hr class="border-gray-300 dark:border-gray-700">
+                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <h5 class="text-sm font-semibold text-label uppercase">Aluno:</h5>
-                        <p class="text-content text-lg">{{ aula.aluno }}</p>
+                        <h5 class="text-sm font-semibold text-gray-800 dark:text-gray-100 uppercase">Aluno:</h5>
+                        <p class="text-black dark:text-white text-lg">{{ aula.aluno }}</p>
                     </div>
                     <div>
-                        <h5 class="text-sm font-semibold text-label uppercase">Professor:</h5>
-                        <p class="text-content text-lg">{{ aula.professor }}</p>
+                        <h5 class="text-sm font-semibold text-gray-800 dark:text-gray-100 uppercase">Professor:</h5>
+                        <p class="text-black dark:text-white text-lg">{{ aula.professor }}</p>
                     </div>
                 </div>
             </div>
         </div>
         
         {# Seção de botões de ação no rodapé do card. #}
-        <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
+        <div class="bg-gray-50 dark:bg-black px-6 py-4 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
             
             <a href="{% url 'home' %}" 
                class="btn-secondary-custom text-center w-full sm:w-auto px-4 py-2 rounded-md font-medium">
@@ -75,4 +72,42 @@
         </div>
     </div>
 </div>
+
+<style>
+    /* Definições de estilo para botões personalizados. Ajuste as cores conforme necessário. */
+    .btn-primary-custom {
+        background-color: #2563eb; /* Azul */
+        /* text-white já está na tag <a> */
+    }
+    .btn-primary-custom:hover {
+        background-color: #1d4ed8;
+    }
+
+    .btn-secondary-custom {
+        background-color: #e5e7eb; /* Cinza claro */
+        color: #1f2937; /* Texto escuro para contraste */
+        border: 1px solid #d1d5db;
+    }
+    .btn-secondary-custom:hover {
+        background-color: #d1d5db;
+    }
+    /* Estilo para dark mode do botão secundário */
+    .dark .btn-secondary-custom { 
+        background-color:rgb(0, 0, 0); /* Cinza mais escuro para o fundo do botão */
+        color: #f3f4f6; /* Texto cinza muito claro */
+        border-color:rgb(0, 0, 0); /* Borda cinza média */
+    }
+    .dark .btn-secondary-custom:hover {
+        background-color:rgb(0, 0, 0); /* Cinza médio ao passar o mouse */
+    }
+
+    .btn-danger-custom {
+        background-color: #dc2626; /* Vermelho */
+        /* text-white já está na tag <a> */
+    }
+    .btn-danger-custom:hover {
+        background-color: #b91c1c;
+    }
+</style>
+
 {% endblock %}

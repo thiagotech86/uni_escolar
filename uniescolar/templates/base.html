@@ -64,7 +64,6 @@
             background-color: #ffffff; /* Fundo branco para as opções */
         }
 
-
         .form-input-custom {
             @apply shadow-sm appearance-none border rounded w-full py-3 px-4 leading-tight
                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
@@ -84,7 +83,6 @@
             color: #000000;
             background-color: #ffffff;
         }
-
 
         /* Botões Customizados (modo claro) */
         .btn-primary-custom {
@@ -108,88 +106,95 @@
             @apply font-semibold py-2 px-4 rounded-md hover:bg-red-600 transition-colors duration-150 ease-in-out;
         }
 
-
-        /* Estilos Dark Mode */
-        body.dark-mode {
+        /* Estilos Dark Mode - AGORA USANDO body.dark */
+        body.dark { /* Alterado de body.dark-mode para body.dark */
             background-color: #111827; /* Tailwind gray-900 */
             color: #d1d5db; /* Tailwind gray-300 */
         }
-        body.dark-mode .form-card {
+        body.dark .form-card { /* Alterado de body.dark-mode para body.dark */
             background-color: #1f2937; /* Tailwind gray-800 */
         }
-        body.dark-mode .text-content,
-        body.dark-mode .text-center-label {
+        body.dark .text-content, /* Alterado de body.dark-mode para body.dark */
+        body.dark .text-center-label { /* Alterado de body.dark-mode para body.dark */
             color: #f9fafb; /* Tailwind gray-50 */
         }
-        body.dark-mode .text-muted {
+        body.dark .text-muted { /* Alterado de body.dark-mode para body.dark */
             color: #9ca3af; /* Tailwind gray-400 */
         }
-        body.dark-mode .text-label {
+        body.dark .text-label { /* Alterado de body.dark-mode para body.dark */
             color: #d1d5db; /* Tailwind gray-300 */
         }
         
-        /* Inputs no modo escuro */
+        /* Inputs no modo escuro - AGORA USANDO body.dark */
         /* As variantes dark: na classe .form-input-custom devem cuidar dos inputs que usam essa classe.
            As regras genéricas abaixo para inputs no dark mode são um fallback. */
-        body.dark-mode input[type="text"],
-        body.dark-mode input[type="password"],
-        body.dark-mode input[type="email"],
-        body.dark-mode input[type="number"],
-        body.dark-mode input[type="date"],
-        body.dark-mode input[type="time"],
-        body.dark-mode select,
-        body.dark-mode textarea {
+        body.dark input[type="text"], /* Alterado de body.dark-mode para body.dark */
+        body.dark input[type="password"],
+        body.dark input[type="email"],
+        body.dark input[type="number"],
+        body.dark input[type="date"],
+        body.dark input[type="time"],
+        body.dark select,
+        body.dark textarea {
             border-color: #4b5563; /* Tailwind gray-600 */
             color: #f3f4f6; /* Tailwind gray-100 */
             background-color: #374151; /* Tailwind gray-700 */
         }
-        body.dark-mode input[type="text"]::placeholder,
-        body.dark-mode input[type="password"]::placeholder,
-        body.dark-mode input[type="email"]::placeholder,
-        body.dark-mode input[type="number"]::placeholder,
-        body.dark-mode input[type="date"]::placeholder,
-        body.dark-mode input[type="time"]::placeholder,
-        body.dark-mode textarea::placeholder {
-            color: #9ca3af; /* Tailwind gray-400 (era gray-500, ajustado para ser mais claro que o texto do input) */
+        body.dark input[type="text"]::placeholder, /* Alterado de body.dark-mode para body.dark */
+        body.dark input[type="password"]::placeholder,
+        body.dark input[type="email"]::placeholder,
+        body.dark input[type="number"]::placeholder,
+        body.dark input[type="date"]::placeholder,
+        body.dark input[type="time"]::placeholder,
+        body.dark textarea::placeholder {
+            color: #9ca3af; /* Tailwind gray-400 */
         }
         /* Para o select no modo escuro, garantir que as opções também tenham cores adequadas */
-        body.dark-mode select option {
-            color: #000000; /* Opções geralmente usam estilo do sistema, pode ser difícil estilizar consistentemente */
-            background-color: #ffffff; /* Ou uma cor escura se o sistema permitir */
+        body.dark select option { /* Alterado de body.dark-mode para body.dark */
+            color: #000000; 
+            background-color: #ffffff; 
         }
 
-
-        /* Botões Customizados (modo escuro) */
-        body.dark-mode .btn-primary-custom {
+        /* Botões Customizados (modo escuro) - AGORA USANDO body.dark */
+        body.dark .btn-primary-custom { /* Alterado de body.dark-mode para body.dark */
             background-color: #60a5fa; /* Tailwind blue-400 */
-            color: #111827; /* Texto escuro para contraste no botão claro */
+            color: #111827; 
             @apply hover:bg-blue-500;
         }
-        body.dark-mode .btn-secondary-custom {
+        body.dark .btn-secondary-custom { /* Alterado de body.dark-mode para body.dark */
             background-color: #4b5563; /* Tailwind gray-600 */
             color: #ffffff;
             @apply hover:bg-gray-700;
         }
-        body.dark-mode .btn-success-custom {
+        body.dark .btn-success-custom { /* Alterado de body.dark-mode para body.dark */
             background-color: #34d399; /* Tailwind green-400 */
-            color: #111827; /* Texto escuro */
+            color: #111827; 
             @apply hover:bg-green-500;
         }
-        body.dark-mode .btn-danger-custom {
+        body.dark .btn-danger-custom { /* Alterado de body.dark-mode para body.dark */
             background-color: #f87171; /* Tailwind red-400 */
             color: #ffffff;
             @apply hover:bg-red-500;
         }
 
-        /* Ajustes para alertas Bootstrap no modo escuro */
-        body.dark-mode .alert-dismissible .btn-close {
+        /* Ajustes para alertas Bootstrap no modo escuro - AGORA USANDO body.dark */
+        body.dark .alert-dismissible .btn-close { /* Alterado de body.dark-mode para body.dark */
             filter: invert(1) grayscale(100%) brightness(200%);
         }
-        body.dark-mode .alert {
+        body.dark .alert { /* Alterado de body.dark-mode para body.dark */
             @apply bg-gray-700 text-gray-200 border-gray-600;
         }
-        body.dark-mode .alert-success { @apply bg-green-700 text-green-100 border-green-600; }
-        body.dark-mode .alert-danger { @apply bg-red-700 text-red-100 border-red-600; }
+        body.dark .alert-success { @apply bg-green-700 text-green-100 border-green-600; }
+        body.dark .alert-danger { @apply bg-red-700 text-red-100 border-red-600; }
+
+        /* Estilo para o rodapé no modo escuro */
+        body.dark footer {
+             background-color: #1f2937; /* Tailwind gray-800, igual ao .form-card no dark mode */
+             border-top-color: #374151; /* Tailwind gray-700 */
+        }
+        body.dark footer p.text-muted {
+            color: #9ca3af; /* Tailwind gray-400, igual ao .text-muted no dark mode */
+        }
 
     </style>
 </head>
@@ -213,7 +218,7 @@
         {% endblock %}
     </main>
 
-    <footer class="bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 text-center p-4 mt-auto">
+    <footer class="bg-gray-100 border-t border-gray-200 text-center p-4 mt-auto">
         <p class="text-sm text-muted">© {% now "Y" %} Universo Escolar. Todos os direitos reservados.</p>
     </footer>
 
@@ -243,17 +248,19 @@
         function applyTheme(theme) {
             const isDark = theme === 'dark';
             if (isDark) {
-                siteBody.classList.add('dark-mode');
+                siteBody.classList.add('dark'); // Alterado de 'dark-mode' para 'dark'
+                // siteBody.classList.remove('dark-mode'); // Opcional: remover a classe antiga se ainda estiver presente de caches antigos
             } else {
-                siteBody.classList.remove('dark-mode');
+                siteBody.classList.remove('dark'); // Alterado de 'dark-mode' para 'dark'
+                // siteBody.classList.remove('dark-mode'); // Opcional
             }
             updateIcon(themeToggleBtn, isDark);
             updateIcon(mobileThemeToggleBtn, isDark);
         }
 
         function toggleTheme() {
-            const currentTheme = siteBody.classList.contains('dark-mode') ? 'dark' : 'light';
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            const currentThemeIsDark = siteBody.classList.contains('dark'); // Verifica a classe 'dark'
+            const newTheme = currentThemeIsDark ? 'light' : 'dark';
             applyTheme(newTheme);
             localStorage.setItem(themeLocalStorageKey, newTheme);
         }
@@ -276,11 +283,11 @@
                 applyTheme('light'); 
             }
         }
-
         
+        // Ouve mudanças na preferência de esquema de cores do sistema
         if (window.matchMedia) {
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-               
+                // Só atualiza se não houver preferência explícita do usuário salva
                 if (!localStorage.getItem(themeLocalStorageKey)) {
                     applyTheme(event.matches ? 'dark' : 'light');
                 }
@@ -290,5 +297,3 @@
 
 </body>
 </html>
-
-
