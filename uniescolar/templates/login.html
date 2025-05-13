@@ -1,5 +1,18 @@
 {% extends 'base.html' %}
 
+<<<<<<< HEAD
+{% block content %}
+<div class="login-container">
+    <h2>Login</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}  <!-- Exibe os campos do formulário -->
+        <button type="submit">Entrar</button>
+    </form>
+    <p>Não tem conta? <a href="{% url 'register' %}">Cadastre-se</a></p>  <!-- Caso tenha uma página de registro -->
+</div>
+{% endblock %}
+=======
 {% block title %}Login - Universo Escolar{% endblock %}
 
 {% block content %}
@@ -92,3 +105,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 {% endblock %}
+>>>>>>> main

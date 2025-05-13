@@ -3,6 +3,13 @@ from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
+<<<<<<< HEAD
+from .models import Aula
+from .forms import SignUpForm, AddAulaForm, CustomLoginForm
+from django.contrib.auth.hashers import make_password
+from datetime import datetime, timedelta
+from .models import Aluno
+=======
 from .forms import SignUpForm, AddAulaForm, CustomLoginForm
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
@@ -12,6 +19,7 @@ from datetime import datetime, timedelta, date
 from django.http import JsonResponse # Para excluir_aula
 from django.views.decorators.csrf import csrf_exempt # Para excluir_aula
 from django.views.decorators.http import require_POST # Para excluir_aula
+>>>>>>> main
 
 # Create your views here.
 
@@ -25,6 +33,61 @@ def login_view(request):
                 return redirect('home')
             else:
                 form.add_error(None, 'Usuário ou senha inválidos')
+<<<<<<< HEAD
+        else:
+            form.add_error(None, 'Erro no formulário. Tente novamente!')
+    else:
+        form = CustomLoginForm()
+
+    return render(request, 'login.html', {'form': form})
+
+
+# Tela Home / Login
+def home(request):
+
+    aulas=Aula.objects.all() 
+
+    total = timedelta()  # total acumulado de horas
+
+    # Adicionando a duração das aulas
+    for aula in aulas:
+        if aula.hora_inicio and aula.hora_fim:
+            inicio = datetime.combine(datetime.today(), aula.hora_inicio)
+            fim = datetime.combine(datetime.today(), aula.hora_fim)
+            duracao = fim - inicio
+            total += duracao
+            aula.duracao = round(duracao.total_seconds() / 3600, 2)  # em horas
+
+    total_horas = round(duracao.total_seconds() / 3600, 2)  # calcular o total de horas
+
+        # Dicionário com nome do aluno -> horas contratadas
+    horas_contratadas_aluno = {}
+    for aluno in Aluno.objects.all():
+           horas_contratadas_aluno[aluno.nome] = aluno.horas_contratadas()
+
+    return render(request, 'home.html', {
+    'aulas': aulas,
+    'total': round(total.total_seconds() / 3600, 2),
+    'horas_contratadas_aluno': horas_contratadas_aluno,
+    'total_contratado_todos': sum(horas_contratadas_aluno.values()),
+})
+
+
+    if request.method=="POST": # Se o método request for post, valide login e senha, se não retorne a página home.
+        username=request.POST['usuario']
+        password=request.POST['senha']
+        #Autenticação
+        user=authenticate(
+            request,
+            username=username,
+            password=password
+        )
+        if user is not None: # condição após a validação
+            login(request,user)
+            messages.success(request,"Login realizado com sucesso!") # mensagem de confirmação de login
+            return redirect('home')
+=======
+>>>>>>> main
         else:
             form.add_error(None, 'Erro no formulário. Tente novamente!')
     else:
@@ -119,11 +182,23 @@ def logout_user(request):
 def total_aulas(request,id):
     if request.user.is_authenticated:
         total=Aula.objects.count()
+<<<<<<< HEAD
+        
+=======
 
+>>>>>>> main
         return render (request,'home.html',{'total':total})
     else:
         messages.error(request,'Você precisa estar logado')
         return redirect('home')
+<<<<<<< HEAD
+    
+    
+
+
+
+=======
+>>>>>>> main
 
 
 def register_user(request):
@@ -150,7 +225,11 @@ def register_user(request):
 
     else:
         user_form = SignUpForm()
+<<<<<<< HEAD
+        
+=======
 
+>>>>>>> main
     return render(request, "register.html", {'user_form': user_form})
 
 def book_detail(request,id):
@@ -161,6 +240,17 @@ def book_detail(request,id):
         messages.error(request,'Você precisa estar logado')
         return redirect('home')
 
+<<<<<<< HEAD
+def add_aula(request):
+    form = AddAulaForm(request.POST or None)
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Aula adicionado com sucesso!')
+                return redirect('home')
+        return render(request, 'add_aula.html', {'form':form})
+=======
 
 @login_required
 def add_aula(request): # Mude este nome se sua view se chamar diferente
@@ -176,6 +266,7 @@ def add_aula(request): # Mude este nome se sua view se chamar diferente
             messages.success(request, "Aula cadastrada com sucesso!")
             return redirect('home') 
         
+>>>>>>> main
     else:
         form = AddAulaForm() # Formulário para GET
 
@@ -206,3 +297,9 @@ def excluir_aula(request, aula_id):
             return JsonResponse({'status': 'erro', 'mensagem': 'Aula não encontrada'}, status=404)
     else:
         return JsonResponse({'status': 'erro', 'mensagem': 'Usuário não autenticado'}, status=401)
+<<<<<<< HEAD
+
+
+
+=======
+>>>>>>> main
