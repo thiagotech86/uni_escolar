@@ -13,6 +13,6 @@ def nav_access_permissions(request):
 
         if request.user.is_superuser or is_professor:
             can_add_aula = True
+
     return {'can_add_aula_permission': can_add_aula}
 
-#1#
