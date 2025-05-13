@@ -1,7 +1,8 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import  Aula, Materia, Aluno
+from .models import  Aula, Disciplina, Aluno
+from django.contrib.auth.forms import AuthenticationForm
 
 # Formulário de cadastro
 class SignUpForm(UserCreationForm):
@@ -62,7 +63,7 @@ class SignUpForm(UserCreationForm):
 
 class AddAulaForm(forms.ModelForm):
     
-    disciplina=forms.ModelChoiceField(Materia.objects.all()),
+    disciplina=forms.ModelChoiceField(Disciplina.objects.all()),
 
     descricao=forms.CharField(required=True,
     widget=forms.widgets.Textarea(
@@ -91,3 +92,19 @@ class AddAulaForm(forms.ModelForm):
     class Meta:
         model=Aula
         fields=('disciplina','aluno','descricao', 'data','inicio','termino',)
+
+class CustomLoginForm(AuthenticationForm):
+    user_type = forms.ChoiceField(
+        label="Eu sou", # O label que aparecerá
+        choices=[
+            ('aluno_responsavel', 'Aluno/Responsável'),
+            ('professor', 'Professor'),
+        ],
+        required=True, # Defina como True se a seleção for obrigatória
+        widget=forms.Select(attrs={
+            
+        })
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
