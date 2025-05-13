@@ -3,11 +3,7 @@
 {% block title %}Login - Universo Escolar{% endblock %}
 
 {% block content %}
-<<<<<<< HEAD
 <div class="flex justify-center items-center min-h-[calc(100vh-150px)] py-8"> 
-=======
-<div class="flex justify-center items-center min-h-[calc(100vh-150px)] py-8"> {# Ajuste min-h conforme altura da navbar/footer se necessário #}
->>>>>>> 5faf019152b9d124f206233b43131c3c216db003
     <div class="w-full max-w-md">
        
         <div class="form-card shadow-xl rounded-lg px-8 py-10">
@@ -20,22 +16,14 @@
                
                 {% for field in form %}
                     <div class="mb-5">
-<<<<<<< HEAD
                        
-=======
-                        {# A label só será exibida se existir e não for para um campo oculto. #}
->>>>>>> 5faf019152b9d124f206233b43131c3c216db003
                         {% if field.label and field.field.widget.input_type != 'hidden' %}
                             <label for="{{ field.id_for_label }}" class="block text-label text-sm font-bold mb-2">
                                 {{ field.label }}
                             </label>
                         {% endif %}
                         
-<<<<<<< HEAD
                         {{ field }} 
-=======
-                        {{ field }} {# Renderiza o widget do campo. O script abaixo aplicará estilos. #}
->>>>>>> 5faf019152b9d124f206233b43131c3c216db003
                         
                         {% if field.help_text %}
                             <p class="text-xs text-muted mt-1">{{ field.help_text|safe }}</p>
@@ -88,13 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'border-gray-300'       // Cor da borda
     ];
 
-<<<<<<< HEAD
     
-=======
-    // Classes para modo escuro (SOBRESCRITAS ou ADICIONADAS)
-    // Ajuste estas cores para combinar com o seu .form-card
-    // Exemplo: se o card é dark:bg-slate-800, o input poderia ser dark:bg-slate-700
->>>>>>> 5faf019152b9d124f206233b43131c3c216db003
     const darkModeClasses = [
         'dark:bg-gray-700',         // OU dark:bg-slate-700 se o card for slate-800
         'dark:text-gray-200',       // Texto do input

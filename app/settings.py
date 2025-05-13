@@ -111,11 +111,11 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Caminho para sua pasta de templates global, se houver
-        'APP_DIRS': True,  # Permite que o Django procure templates dentro das pastas 'templates' de cada app
+        'APP_DIRS': True,  
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request', # O '2' perdido foi removido daqui
+                'django.template.context_processors.request', 
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'uniescolar.context_processors.nav_access_permissions', # Esta linha está correta
