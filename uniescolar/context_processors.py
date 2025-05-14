@@ -4,7 +4,7 @@ def nav_access_permissions(request):
     can_add_aula = False
     if request.user.is_authenticated:
         is_professor = False
-        if not request.user.is_anonymous: # Garante que user não é AnonymousUser
+        if not request.user.is_anonymous:
             try:
                 # Se Professor.nome (PK) é o User, podemos verificar assim:
                 is_professor = Professor.objects.filter(pk=request.user.pk).exists()
@@ -15,4 +15,3 @@ def nav_access_permissions(request):
             can_add_aula = True
     return {'can_add_aula_permission': can_add_aula}
 
-#1#

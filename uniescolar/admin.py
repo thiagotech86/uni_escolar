@@ -1,17 +1,11 @@
 from django.contrib import admin
-<<<<<<< HEAD
-from .models import  Usuario, Professor, Responsavel, Aluno, PacoteHora, Aula, Disciplina,PacoteHora
-=======
-from .models import Aula, Disciplina, Aluno, Professor
->>>>>>> main
+from .models import Usuario, Responsavel, Professor, Gestor, Disciplina, Aluno, PacoteHora, Aula
 from django.contrib.auth.models import User
-
 from django import forms
 import datetime
 
 # Register your models here.
 
-<<<<<<< HEAD
 # Widget de horário com apenas 00 e 30 minutos
 
 class CustomTimeSelect(forms.Select):
@@ -32,10 +26,7 @@ class AulaAdminForm(forms.ModelForm):
         model = Aula
         fields = '__all__'
 
-=======
-admin.site.register(Disciplina)
->>>>>>> main
-admin.site.register(Aluno)
+
 
 class AulaAdmin(admin.ModelAdmin):
     form = AulaAdminForm
@@ -45,4 +36,9 @@ admin.site.register(Professor)
 admin.site.register(Responsavel)
 admin.site.register(Disciplina)
 admin.site.register(PacoteHora)
+admin.site.register(Usuario)
+admin.site.register(Gestor)
+admin.site.register(Aluno)
+
+
 
