@@ -37,6 +37,26 @@ class Professor(models.Model):
 
     def __str__(self):
         return f"{self.nome}"
+    
+class Gestor(models.Model):
+    user = models.OneToOneField( # Relação OneToOne com User do Django, User é a PK de Gestor
+        User, 
+        on_delete=models.CASCADE, 
+        primary_key=True,
+        related_name="gestor_profile" # Permite user.gestor_profile
+    )
+    # Adicionar campos específicos do Gestor aqui, se necessário.
+    # Ex: departamento = models.CharField(max_length=100, blank=True)
+
+    def __str__(self):
+        return f"Gestor: {self.user.username}"
+
+    def save(self, *args, **kwargs):
+        # Garante que o User associado ao Gestor seja superuser e staff.
+        self.user.is_superuser = True
+        self.user.is_staff = True 
+        self.user.save() 
+        super().save(*args, **kwargs)
 
 class Disciplina(models.Model):
     nome = models.CharField(max_length=100)

@@ -1,271 +1,200 @@
 {% extends 'base.html' %}
-<<<<<<< HEAD
-=======
 
 {% block title %}Página Inicial - Universo Escolar{% endblock %}
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
->>>>>>> main
 
-{% block content %}
     {% if user.is_authenticated %}
-<<<<<<< HEAD
-<h2 class="text-center">Aulas</h2>
+        
+        <h2 class="text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-6 text-center">Minhas Aulas</h2>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h4>Total de hora/aula: <span id="totalHoras">{{ total }}h</span></h4>
-  <h4 class="text-end">Saldo de horas: <span id="saldoHoras">-</span></h4>
-</div>
-
-<div class="row mb-4">
-  <div class="col-md-3">
-    <label>Data de:</label>
-    <input type="date" id="dataInicio" class="form-control">
-  </div>
-  <div class="col-md-3">
-    <label>Até:</label>
-    <input type="date" id="dataFim" class="form-control">
-  </div>
-  <div class="col-md-3">
-    <label>Professor:</label>
-    <select id="filtroProfessor" class="form-select">
-      <option value="">Todos</option>
-    </select>
-  </div>
-  <div class="col-md-3">
-    <label>Aluno:</label>
-    <select id="filtroAluno" class="form-select">
-      <option value="">Todos</option>
-    </select>
-  </div>
-</div>
-
-<hr>
-=======
-        {# Seção para usuários autenticados: Lista de Aulas #}
-        <h2 class="text-2xl font-semibold text-black dark:text-gray-50 mb-6 text-center">Minhas Aulas</h2>
-
-        <div class="flex flex-col sm:flex-row justify-between items-center mb-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg shadow">
-            <h4 class="text-lg font-semibold text-black dark:text-gray-200 mb-2 sm:mb-0">Total de hora/aula: <span id="totalHoras" class="text-blue-600 dark:text-blue-400">{{ total|default:"0.00" }}h</span></h4>
-            <h4 class="text-lg font-semibold text-black dark:text-gray-200 text-right sm:text-left">Saldo de horas: <span id="saldoHoras" class="text-green-600 dark:text-green-400">-</span></h4>
+        {# Seção de Totais e Saldos #}
+        <div class="flex flex-col sm:flex-row justify-around items-center mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow">
+            <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2 sm:mb-0">
+                Total Hora/Aula (Visíveis): <span id="totalHoras" class="text-blue-600 dark:text-blue-400">{{ total_horas_aulas_filtradas|default:"0.00" }}h</span>
+            </h4>
+            
+            {% if user.responsavel_profiles.exists %} 
+                <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2 sm:mb-0">
+                    Horas Contratadas: <span class="text-blue-600 dark:text-blue-400">{{ total_contratado_responsavel|default:"0" }}h</span>
+                </h4>
+                <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2 sm:mb-0">
+                    Horas Utilizadas: <span class="text-orange-500 dark:text-orange-400">{{ total_utilizado_responsavel|floatformat:2|default:"0.00" }}h</span>
+                </h4>
+                <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2 sm:mb-0">
+                    Saldo de Horas: 
+                    <span id="saldoHorasResponsavel" 
+                          class="font-bold {% if saldo_horas_responsavel < 0 %}text-red-600 dark:text-red-400{% else %}text-green-600 dark:text-green-400{% endif %}">
+                          {{ saldo_horas_responsavel|floatformat:2|default:"0.00" }}h
+                    </span>
+                </h4>
+            {% else %}
+                <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200 text-right sm:text-left">Saldo de horas (aluno): <span id="saldoHoras" class="text-green-500 dark:text-green-400">-</span></h4>
+            {% endif %}
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg shadow">
+        {% if aulas %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow">
             <div>
-                <label for="dataInicio" class="block text-sm font-medium text-black dark:text-gray-300 mb-1">Data de:</label>
-                <input type="date" id="dataInicio" class="form-input-custom w-full dark:bg-gray-700 dark:text-gray-50 dark:border-gray-600">
+                <label for="dataInicio" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Data de:</label>
+                <input type="date" id="dataInicio" class="form-input-custom w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-50 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
             </div>
             <div>
-                <label for="dataFim" class="block text-sm font-medium text-black dark:text-gray-300 mb-1">Até:</label>
-                <input type="date" id="dataFim" class="form-input-custom w-full dark:bg-gray-700 dark:text-gray-50 dark:border-gray-600">
+                <label for="dataFim" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Até:</label>
+                <input type="date" id="dataFim" class="form-input-custom w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-50 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
             </div>
+            {% if user_is_gestor or not user.professor_profile %}
             <div>
-                <label for="filtroProfessor" class="block text-sm font-medium text-black dark:text-gray-300 mb-1">Professor:</label>
-                <select id="filtroProfessor" class="form-input-custom w-full dark:bg-gray-700 dark:text-gray-50 dark:border-gray-600">
+                <label for="filtroProfessor" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Professor:</label>
+                <select id="filtroProfessor" class="form-input-custom w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-50 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                     <option value="">Todos</option>
                 </select>
             </div>
+            {% endif %}
+            {% if user_is_gestor or user.professor_profile or not user.responsavel_profiles.exists %}
             <div>
-                <label for="filtroAluno" class="block text-sm font-medium text-black dark:text-gray-300 mb-1">Aluno:</label>
-                <select id="filtroAluno" class="form-input-custom w-full dark:bg-gray-700 dark:text-gray-50 dark:border-gray-600">
+                <label for="filtroAluno" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Aluno:</label>
+                <select id="filtroAluno" class="form-input-custom w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-50 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                     <option value="">Todos</option>
                 </select>
             </div>
+            {% endif %}
         </div>
+        {% endif %}
 
         <hr class="border-t border-gray-300 dark:border-gray-600 my-6">
 
-        <div class="overflow-x-auto bg-white dark:bg-gray-800 shadow-md rounded-lg">
+        <div class="overflow-x-auto bg-white dark:bg-gray-800 shadow-xl rounded-lg">
             <table id="tabelaAulas" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-700">
+                <thead class="bg-gray-200 dark:bg-gray-700"> 
                     <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-black dark:text-gray-300 uppercase tracking-wider">ID</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-black dark:text-gray-300 uppercase tracking-wider">Disciplina</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-black dark:text-gray-300 uppercase tracking-wider">Data</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-black dark:text-gray-300 uppercase tracking-wider">Início</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-black dark:text-gray-300 uppercase tracking-wider">Término</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-black dark:text-gray-300 uppercase tracking-wider">Aluno</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-black dark:text-gray-300 uppercase tracking-wider">Professor</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-black dark:text-gray-300 uppercase tracking-wider">Total Horas</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-black dark:text-gray-300 uppercase tracking-wider">Ações</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Disciplina</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Data</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Início</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Término</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Aluno</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Professor</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Duração (h)</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Ações</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {% if aulas %}
-                        {% for aula in aulas %}
-                        <tr>
+                        {% for aula_item in aulas %}
+                        
+                        <tr class="
+                            {% if aula_item.status_aprovacao == 'pendente' %}bg-orange-300 text-orange-950 dark:bg-orange-600/70 dark:text-orange-100
+                            {% elif aula_item.status_aprovacao == 'aprovada' %}bg-green-300 text-green-950 dark:bg-green-600/60 dark:text-green-100
+                            {% elif aula_item.status_aprovacao == 'rejeitada' %}bg-red-300 text-red-950 dark:bg-red-600/70 dark:text-red-100 opacity-90
+                            {% else %}text-gray-800 dark:text-gray-200  
+                            {% endif %} hover:bg-gray-100 dark:hover:bg-gray-700/80 transition-colors duration-150">
+                            
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
-                                <a href="{% url 'aula' aula.id %}">{{ aula.id }}</a>
+                                <a href="{% url 'aula' aula_item.id %}">{{ aula_item.id }}</a>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-black dark:text-gray-300">{{ aula.disciplina }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-black dark:text-gray-300 filtro-data" data-date="{{ aula.data_inicio|date:'Y-m-d' }}">{{ aula.data_inicio|date:"d/m/Y" }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-black dark:text-gray-300 hora-inicio">{{ aula.hora_inicio|time:"H:i" }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-black dark:text-gray-300 hora-fim">{{ aula.hora_fim|time:"H:i" }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-black dark:text-gray-300">{{ aula.aluno }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-black dark:text-gray-300">{{ aula.professor }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-black dark:text-gray-300 duracao">{{ aula.duracao }}</td>
+                            {# O texto da célula herda a cor da linha (<tr>) via 'current-color' ou tem um fallback #}
+                            <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %}">{{ aula_item.disciplina.nome }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %} filtro-data" data-date="{{ aula_item.data_inicio|date:'Y-m-d' }}">{{ aula_item.data_inicio|date:"d/m/Y" }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %} hora-inicio">{{ aula_item.hora_inicio|time:"H:i" }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %} hora-fim">{{ aula_item.hora_fim|time:"H:i" }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %}">{{ aula_item.aluno.nome }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %}">{{ aula_item.professor.user.username }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %} duracao">{{ aula_item.duracao_calculada|default:"0.00" }}</td>
+                            
+                            
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold 
+                                {% if aula_item.status_aprovacao == 'aprovada' %}text-green-700 dark:text-green-300
+                                {% elif aula_item.status_aprovacao == 'pendente' %}text-orange-700 dark:text-orange-300
+                                {% elif aula_item.status_aprovacao == 'rejeitada' %}text-red-700 dark:text-red-300
+                                {% else %}current-color
+                                {% endif %}">
+                                {{ aula_item.get_status_aprovacao_display }}
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                <button class="btn-excluir bg-red-500 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded text-xs shadow hover:shadow-md transition-all duration-150" data-id="{{ aula.id }}">Excluir</button>
+                                
+                                {% if user_is_gestor and aula_item.status_aprovacao == 'pendente' %}
+                                    <div class="flex space-x-2">
+                                        <a href="{% url 'editar_aprovar_aula_gestor' aula_item.id %}" class="text-xs bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-2 rounded shadow hover:shadow-md transition-all duration-150">
+                                            Editar
+                                        </a>
+                                        <form action="{% url 'aprovar_aula' aula_item.id %}" method="POST" class="inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="text-xs bg-green-500 hover:bg-green-600 text-white font-semibold py-1 px-2 rounded shadow hover:shadow-md transition-all duration-150">Aprovar</button>
+                                        </form>
+                                        <form action="{% url 'rejeitar_aula' aula_item.id %}" method="POST" class="inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="text-xs bg-orange-500 hover:bg-orange-600 text-white font-semibold py-1 px-2 rounded shadow hover:shadow-md transition-all duration-150">Rejeitar</button>
+                                        </form>
+                                    </div>
+                                {% endif %}
+                                
+                                {% if user_is_gestor or user.professor_profile == aula_item.professor and aula_item.status_aprovacao == 'pendente' %}
+                                <button class="btn-excluir mt-1 bg-red-500 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded text-xs shadow hover:shadow-md transition-all duration-150" data-id="{{ aula_item.id }}">Excluir</button>
+                                {% elif not user_is_gestor and aula_item.status_aprovacao != 'pendente' and user.professor_profile == aula_item.professor %}
+                                    <span class="text-xs text-gray-500 dark:text-gray-400 italic">(Já processada)</span>
+                                {% elif not user_is_gestor and user.professor_profile != aula_item.professor %}
+                                     <span class="text-xs text-gray-500 dark:text-gray-400">-</span>
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="9" class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300 text-center">Nenhuma aula disponível.</td>
+                            <td colspan="10" class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300 text-center">Nenhuma aula encontrada para seu perfil ou filtros.</td>
                         </tr>
                     {% endif %}
                 </tbody>
             </table>
         </div>
 
-        {{ horas_contratadas_aluno|json_script:"dadosContratadosPorAluno" }}
-        {{ total_contratado_todos|json_script:"dadosTotalContratado" }}
->>>>>>> main
+        {{ horas_contratadas_por_aluno_json|json_script:"dadosContratadosPorAluno" }}
+        {{ total_contratado_todos_alunos_json|json_script:"dadosTotalContratado" }}
 
-<table class="table table-striped table-bordered table-hover" id="tabelaAulas">
-  <thead class="table-dark">
-    <tr>
-      <th>ID</th>
-      <th>Disciplina</th>
-      <th>Data</th>
-      <th>Início</th>
-      <th>Término</th>
-      <th>Aluno</th>
-      <th>Professor</th>
-      <th>Total Horas</th>
-      <th>Ações</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% if aulas %}
-      {% for aula in aulas %}
-        <tr>
-          <td><a href="{% url 'aula' aula.id %}">{{ aula.id }}</a></td>
-          <td>{{ aula.disciplina }}</td>
-          <td class="filtro-data" data-date="{{ aula.data_inicio|date:'Y-m-d' }}">{{ aula.data_inicio|date:'d/m/Y' }}</td>
-          <td class="hora-inicio">{{ aula.hora_inicio|time:"H:i" }}</td>
-          <td class="hora-fim">{{ aula.hora_fim|time:"H:i" }}</td>
-          <td>{{ aula.aluno }}</td>
-          <td>{{ aula.professor }}</td>
-          <td class="duracao">{{ aula.duracao }}</td>
-          <td>
-            <button class="btn btn-danger btn-excluir" data-id="{{ aula.id }}">Excluir</button>
-          </td>
-        </tr>
-      {% endfor %}
     {% else %}
-<<<<<<< HEAD
-      <tr>
-        <td colspan="9" class="text-center">Nenhuma aula disponível.</td>
-      </tr>
-    {% endif %}
-  </tbody>
-</table>
-
-<!-- Injetando dados de horas contratadas por aluno -->
-    {{ horas_contratadas_aluno|json_script:"dadosContratadosPorAluno" }}
-    {{ total_contratado_todos|json_script:"dadosTotalContratado" }}
-
-    <script>
-        const horasContratadasPorAluno = JSON.parse(document.getElementById("dadosContratadosPorAluno").textContent);
-        const totalContratadoTodos = JSON.parse(document.getElementById("dadosTotalContratado").textContent);
-    </script>
-
-<script>
-  function atualizarTotalHoras() {
-    let totalHoras = 0;
-    document.querySelectorAll('.duracao').forEach(function (duracaoCelula) {
-      let valor = parseFloat(duracaoCelula.innerText.replace(',', '.'));
-      if (!isNaN(valor)) {
-        totalHoras += valor;
-      }
-    });
-    document.getElementById('totalHoras').innerText = totalHoras.toFixed(2) + 'h';
-  }
-  atualizarTotalHoras();
-</script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll('.btn-excluir').forEach(button => {
-      button.addEventListener('click', function () {
-        if (!confirm("Tem certeza que deseja excluir esta aula?")) return;
-
-        const aulaId = this.getAttribute('data-id');
-        fetch(`/excluir-aula/${aulaId}/`, {
-          method: 'POST',
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRFToken': '{{ csrf_token }}',
-          },
-        })
-          .then(response => response.json())
-          .then(data => {
-            if (data.status === 'ok') {
-              this.closest('tr').remove();
-              aplicarFiltro(); // atualiza total e saldo
-            } else {
-              alert("Erro ao excluir: " + data.mensagem);
-            }
-          })
-          .catch(() => {
-            alert("Erro de conexão ao excluir a aula.");
-          });
-      });
-    });
-
-=======
-        
+        {# Formulário de Login #}
         <div class="flex justify-center items-center py-8 min-h-[calc(100vh-200px)]">
             <div class="w-full max-w-md">
-                
+                {% if messages %}
+                    <div class="mb-4">
+                        {% for message in messages %}
+                            <div class="p-4 rounded-md 
+                                {% if message.tags == 'error' %}bg-red-100 border border-red-400 text-red-700 dark:bg-red-900 dark:border-red-700 dark:text-red-200
+                                {% elif message.tags == 'success' %}bg-green-100 border border-green-400 text-green-700 dark:bg-green-900 dark:border-green-700 dark:text-green-200
+                                {% else %}bg-blue-100 border border-blue-400 text-blue-700 dark:bg-blue-900 dark:border-blue-700 dark:text-blue-200
+                                {% endif %}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
                 <div class="form-card px-6 py-8 dark:bg-gray-800 rounded-lg shadow-xl"> 
                     <h2 class="text-3xl font-bold text-center text-black dark:text-white mb-2">Bem-vindo!</h2>
                     <p class="text-center text-gray-600 dark:text-gray-400 mb-8">Faça login para continuar</p>
-
                     <form method="post" action="{% url 'home' %}"> 
                         {% csrf_token %}
                         <div class="mb-5">
-                            <label for="username-home" class="block text-black dark:text-gray-300 text-sm font-bold mb-2">
-                                Usuário:
-                            </label>
-                           
-                            <input type="text" id="username-home" name="username" placeholder="Insira o usuário"
-                                   class="shadow-sm appearance-none border border-gray-300 rounded w-full py-2 px-3 bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out" required>
+                            <label for="username-home" class="block text-black dark:text-gray-300 text-sm font-bold mb-2">Usuário (Usuário):</label>
+                            <input type="text" id="username-home" name="username" placeholder="Insira o usuário" class="shadow-sm appearance-none border border-gray-300 rounded w-full py-3 px-3 bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out dark:bg-gray-700 dark:text-gray-50 dark:border-gray-600 dark:placeholder-gray-400" required>
                         </div>
-
                         <div class="mb-6">
-                            <label for="password-home" class="block text-black dark:text-gray-300 text-sm font-bold mb-2">
-                                Senha:
-                            </label>
-                        
-                            <input type="password" id="password-home" name="password" placeholder="Insira a senha"
-                                   class="shadow-sm appearance-none border border-gray-300 rounded w-full py-2 px-3 bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out" required>
+                            <label for="password-home" class="block text-black dark:text-gray-300 text-sm font-bold mb-2">Senha:</label>
+                            <input type="password" id="password-home" name="password" placeholder="Insira a senha" class="shadow-sm appearance-none border border-gray-300 rounded w-full py-3 px-3 bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out dark:bg-gray-700 dark:text-gray-50 dark:border-gray-600 dark:placeholder-gray-400" required>
                         </div>
-                        
                         <div class="mb-6">
-                            <label for="userType-home" class="block text-black dark:text-gray-300 text-sm font-bold mb-2">
-                                Eu sou:
-                            </label>
-                           
-                            <select id="userType-home" name="user_type"
-                                    class="shadow-sm appearance-none border border-gray-300 rounded w-full py-2 px-3 bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out leading-tight">
-                                <option value="aluno_responsavel" class="text-black bg-white">Aluno/Responsável</option>
-                                <option value="professor" class="text-black bg-white">Professor</option>
+                            <label for="userType-home" class="block text-black dark:text-gray-300 text-sm font-bold mb-2">Eu sou:</label>
+                            <select id="userType-home" name="user_type" class="shadow-sm appearance-none border border-gray-300 rounded w-full py-3 px-3 bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out leading-tight dark:bg-gray-700 dark:text-gray-50 dark:border-gray-600">
+                                <option value="aluno_responsavel" class="text-black bg-white dark:text-gray-200 dark:bg-gray-600">Responsável</option>
+                                <option value="professor" class="text-black bg-white dark:text-gray-200 dark:bg-gray-600">Professor</option>
+                                <option value="gestor" class="text-black bg-white dark:text-gray-200 dark:bg-gray-600">Gestor</option>
                             </select>
                         </div>
-                        
                         <div class="flex items-center justify-center mt-8">
-                            <button type="submit"
-                                    class="btn-primary-custom w-full py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline hover:opacity-90 transition-opacity duration-150">
-                                Entrar
-                            </button>
+                            <button type="submit" class="btn-primary-custom w-full py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline hover:opacity-90 transition-opacity duration-150">Entrar</button>
                         </div>
-                         <p class="text-center text-gray-600 dark:text-gray-400 mt-6 text-sm">
-                            Não tem uma conta? 
-                            <a href="{% url 'register' %}" class="font-medium text-blue-600 dark:text-blue-400 hover:underline">Cadastre-se</a>
-                        </p>
+                         <p class="text-center text-gray-600 dark:text-gray-400 mt-6 text-sm">Não tem uma conta? <a href="{% url 'register' %}" class="font-medium text-blue-600 dark:text-blue-400 hover:underline">Cadastre-se</a></p>
                     </form>
                 </div>
             </div>
@@ -273,103 +202,29 @@
     {% endif %}
 </div>
 
-{% if user.is_authenticated %}
+{% if user.is_authenticated and aulas %}
 <script>
 
 document.addEventListener("DOMContentLoaded", function () {
->>>>>>> main
-    const dataInicio = document.getElementById("dataInicio");
-    const dataFim = document.getElementById("dataFim");
-    const filtroProfessor = document.getElementById("filtroProfessor");
-    const filtroAluno = document.getElementById("filtroAluno");
-<<<<<<< HEAD
-
-    const professores = new Set();
-    const alunos = new Set();
-
-    document.querySelectorAll("#tabelaAulas tbody tr").forEach(row => {
-      const prof = row.children[6]?.textContent.trim();
-      const aluno = row.children[5]?.textContent.trim();
-      if (prof) professores.add(prof);
-      if (aluno) alunos.add(aluno);
-    });
-
-    professores.forEach(nome => {
-      const opt = document.createElement("option");
-      opt.value = nome;
-      opt.textContent = nome;
-      filtroProfessor.appendChild(opt);
-    });
-
-    alunos.forEach(nome => {
-      const opt = document.createElement("option");
-      opt.value = nome;
-      opt.textContent = nome;
-      filtroAluno.appendChild(opt);
-    });
-
-    function aplicarFiltro() {
-      const inicio = dataInicio.value;
-      const fim = dataFim.value;
-      const prof = filtroProfessor.value.toLowerCase();
-      const aluno = filtroAluno.value.toLowerCase();
-      let totalHoras = 0;
-
-      document.querySelectorAll("#tabelaAulas tbody tr").forEach(row => {
-        const dataCelula = row.querySelector(".filtro-data");
-        const dataValor = dataCelula?.getAttribute("data-date");
-        const profValor = row.children[6]?.textContent.toLowerCase();
-        const alunoValor = row.children[5]?.textContent.toLowerCase();
-
-        let visivel = true;
-
-        if (inicio && dataValor < inicio) visivel = false;
-        if (fim && dataValor > fim) visivel = false;
-        if (prof && !profValor.includes(prof)) visivel = false;
-        if (aluno && !alunoValor.includes(aluno)) visivel = false;
-
-        row.style.display = visivel ? "" : "none";
-
-        if (visivel) {
-          const duracaoTexto = row.children[7]?.innerText.replace(",", ".");
-          const horas = parseFloat(duracaoTexto);
-          if (!isNaN(horas)) totalHoras += horas;
-        }
-      });
-
-      document.getElementById("totalHoras").innerText = totalHoras.toFixed(2) + "h";
-
-      // saldo de horas com base no aluno selecionado
-=======
+    const dataInicioEl = document.getElementById("dataInicio");
+    const dataFimEl = document.getElementById("dataFim");
+    const filtroProfessorEl = document.getElementById("filtroProfessor");
+    const filtroAlunoEl = document.getElementById("filtroAluno"); 
     const tabelaAulasBody = document.querySelector("#tabelaAulas tbody");
+    const totalHorasSpan = document.getElementById("totalHoras"); 
+    const saldoHorasAlunoSpan = document.getElementById("saldoHoras"); 
 
     let horasContratadasPorAluno = {};
-    let totalContratadoTodos = 0;
-
     try {
         const dadosContratadosElement = document.getElementById("dadosContratadosPorAluno");
-        if (dadosContratadosElement) {
-            horasContratadasPorAluno = JSON.parse(dadosContratadosElement.textContent);
-        }
-    } catch (e) {
-        console.error("Erro ao carregar dadosContratadosPorAluno:", e);
-    }
-
-    try {
-        const dadosTotalContratadoElement = document.getElementById("dadosTotalContratado");
-        if (dadosTotalContratadoElement) {
-            totalContratadoTodos = JSON.parse(dadosTotalContratadoElement.textContent);
-        }
-    } catch (e) {
-        console.error("Erro ao carregar dadosTotalContratado:", e);
-    }
+        if (dadosContratadosElement) horasContratadasPorAluno = JSON.parse(dadosContratadosElement.textContent);
+    } catch (e) { console.error("Erro JS: dadosContratadosPorAluno", e); }
     
     function popularFiltros() {
         const professores = new Set();
         const alunos = new Set();
-
         document.querySelectorAll("#tabelaAulas tbody tr").forEach(row => {
-            if (row.children.length > 6) { 
+            if (row.children.length >= 10 && !row.querySelector("td[colspan='10']")) { 
                 const alunoNome = row.children[5]?.textContent.trim();
                 const profNome = row.children[6]?.textContent.trim();
                 if (alunoNome) alunos.add(alunoNome);
@@ -377,216 +232,122 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        while (filtroProfessor.options.length > 1) filtroProfessor.remove(1);
-        professores.forEach(nome => {
-            const opt = document.createElement("option");
-            opt.value = nome;
-            opt.textContent = nome;
-            filtroProfessor.appendChild(opt);
-        });
-
-        while (filtroAluno.options.length > 1) filtroAluno.remove(1);
-        alunos.forEach(nome => {
-            const opt = document.createElement("option");
-            opt.value = nome;
-            opt.textContent = nome;
-            filtroAluno.appendChild(opt);
-        });
+        if (filtroProfessorEl) {
+            while (filtroProfessorEl.options.length > 1) filtroProfessorEl.remove(1);
+            professores.forEach(nome => { if(nome){ const opt = document.createElement("option"); opt.value = nome; opt.textContent = nome; filtroProfessorEl.appendChild(opt); }});
+        }
+        if (filtroAlunoEl) {
+            while (filtroAlunoEl.options.length > 1) filtroAlunoEl.remove(1);
+            alunos.forEach(nome => { if(nome){ const opt = document.createElement("option"); opt.value = nome; opt.textContent = nome; filtroAlunoEl.appendChild(opt); }});
+        }
     }
 
     function aplicarFiltro() {
         if (!tabelaAulasBody) return; 
-
-        const inicio = dataInicio.value;
-        const fim = dataFim.value;
-        const prof = filtroProfessor.value.toLowerCase();
-        const aluno = filtroAluno.value.toLowerCase();
-        let totalHorasCalculado = 0;
+        const inicioVal = dataInicioEl ? dataInicioEl.value : null;
+        const fimVal = dataFimEl ? dataFimEl.value : null;
+        const profVal = filtroProfessorEl ? filtroProfessorEl.value.toLowerCase() : "";
+        const alunoVal = filtroAlunoEl ? filtroAlunoEl.value.toLowerCase() : "";
+        let totalHorasCalculadoJS = 0;
         let algumaLinhaVisivel = false;
 
-        document.querySelectorAll("#tabelaAulas tbody tr").forEach(row => {
-            if (row.children.length === 1 && row.children[0].getAttribute('colspan')) {
-                row.style.display = "none"; 
-                return;
-            }
-            if (row.children.length < 8) return; 
+        const nenhumaAulaRowExistente = tabelaAulasBody.querySelector("tr td[colspan='10']");
+        if (nenhumaAulaRowExistente) nenhumaAulaRowExistente.parentElement.style.display = "none";
 
-            const dataCelula = row.querySelector(".filtro-data");
-            const dataValor = dataCelula?.getAttribute("data-date");
-            const profValor = row.children[6]?.textContent.toLowerCase();
-            const alunoValor = row.children[5]?.textContent.toLowerCase();
+        document.querySelectorAll("#tabelaAulas tbody tr").forEach(row => {
+            if (row.children.length === 1 && row.children[0].getAttribute('colspan')) return;
+            if (row.children.length < 10) return; 
+
+            const dataRowVal = row.querySelector(".filtro-data")?.getAttribute("data-date");
+            const profRowVal = row.children[6]?.textContent.toLowerCase();
+            const alunoRowVal = row.children[5]?.textContent.toLowerCase();
+            const horasAula = parseFloat(row.querySelector(".duracao")?.innerText.replace(",", ".")) || 0;
+            const statusAulaTd = row.children[8]; 
+            const statusAulaText = statusAulaTd?.textContent.trim().toLowerCase();
+
 
             let visivel = true;
-
-            if (inicio && dataValor < inicio) visivel = false;
-            if (fim && dataValor > fim) visivel = false;
-            if (prof && profValor !== prof) visivel = false; 
-            if (aluno && alunoValor !== aluno) visivel = false; 
-
+            if (inicioVal && dataRowVal < inicioVal) visivel = false;
+            if (fimVal && dataRowVal > fimVal) visivel = false;
+            if (profVal && profRowVal !== profVal) visivel = false; 
+            if (alunoVal && alunoRowVal !== alunoVal) visivel = false; 
+            
             row.style.display = visivel ? "" : "none";
-
             if (visivel) {
                 algumaLinhaVisivel = true;
-                const duracaoTexto = row.querySelector(".duracao")?.innerText.replace(",", ".");
-                const horas = parseFloat(duracaoTexto);
-                if (!isNaN(horas)) totalHorasCalculado += horas;
+                if (statusAulaText === 'aprovada') { 
+                    if (!isNaN(horasAula)) totalHorasCalculadoJS += horasAula;
+                }
             }
         });
         
-        const totalHorasSpan = document.getElementById("totalHoras");
-        if (totalHorasSpan) totalHorasSpan.innerText = totalHorasCalculado.toFixed(2) + "h";
->>>>>>> main
+        if (totalHorasSpan) totalHorasSpan.innerText = totalHorasCalculadoJS.toFixed(2) + "h";
 
-        let alunoSelecionado = filtroAluno.value.trim();
-        let professorSelecionado = filtroProfessor.value.trim();
-        let contratado = 0;
-        let saldo = 0;
-
-        if (professorSelecionado) {
-<<<<<<< HEAD
-            // Professor específico → saldo zero
-            saldo = 0;
-        } else if (alunoSelecionado) {
-            // Aluno específico → usa o pacote dele
-            contratado = horasContratadasPorAluno[alunoSelecionado] || 0;
-            saldo = contratado - totalHoras;
-        } else {
-            // Filtro de aluno = Todos → verificar quantos alunos únicos restaram visíveis
-            const alunosVisiveis = new Set();
-
-            document.querySelectorAll("#tabelaAulas tbody tr").forEach(row => {
-                if (row.style.display !== "none") {
-=======
-            saldo = 0; 
-        } else if (alunoSelecionado) {
-            contratado = horasContratadasPorAluno[alunoSelecionado] || 0;
-            saldo = contratado - totalHorasCalculado;
-        } else {
-            const alunosVisiveis = new Set();
-            document.querySelectorAll("#tabelaAulas tbody tr").forEach(row => {
-                if (row.style.display !== "none" && row.children.length > 5) {
->>>>>>> main
-                    const alunoNome = row.children[5]?.textContent.trim();
-                    if (alunoNome) alunosVisiveis.add(alunoNome);
-                }
-            });
-
-            if (alunosVisiveis.size === 1) {
-<<<<<<< HEAD
-                // Apenas um aluno visível → trata como filtro individual
-                const nomeUnico = [...alunosVisiveis][0];
-                contratado = horasContratadasPorAluno[nomeUnico] || 0;
+        if (saldoHorasAlunoSpan) { 
+            if (alunoVal && filtroAlunoEl && horasContratadasPorAluno[filtroAlunoEl.value]) {
+                const contratado = horasContratadasPorAluno[filtroAlunoEl.value] || 0;
+                let horasAprovadasAlunoFiltrado = 0;
+                 document.querySelectorAll("#tabelaAulas tbody tr").forEach(row_saldo => {
+                    if(row_saldo.style.display !== "none" && 
+                       row_saldo.children[5]?.textContent.toLowerCase() === alunoVal &&
+                       row_saldo.children[8]?.textContent.trim().toLowerCase() === 'aprovada' ){
+                        horasAprovadasAlunoFiltrado += parseFloat(row_saldo.querySelector(".duracao")?.innerText.replace(",", ".")) || 0;
+                    }
+                 });
+                const saldo = contratado - horasAprovadasAlunoFiltrado;
+                saldoHorasAlunoSpan.innerText = saldo.toFixed(2) + "h";
+                saldoHorasAlunoSpan.className = 'font-semibold ' + (saldo < 0 ? 'text-red-500 dark:text-red-400' : 'text-green-500 dark:text-green-400');
             } else {
-                // Caso contrário, soma geral
-                contratado = totalContratadoTodos || 0;
+                saldoHorasAlunoSpan.innerText = "-";
+                saldoHorasAlunoSpan.className = 'text-green-500 dark:text-green-400'; 
             }
-
-            saldo = contratado - totalHoras;
-        }
-
-        document.getElementById("saldoHoras").innerText = saldo.toFixed(2) + "h";
-
-
-    }
-
-    dataInicio.addEventListener("change", aplicarFiltro);
-    dataFim.addEventListener("change", aplicarFiltro);
-    filtroProfessor.addEventListener("input", aplicarFiltro);
-    filtroAluno.addEventListener("input", aplicarFiltro);
-  });
-</script>
-{% else %}
-<!-- Login padrão -->
-<h2 class="text-center">Login</h2>
-<hr>
-<form method="post" action="{% url 'home' %}">
-  {% csrf_token %}
-  <div class="mb-3">
-    <label class="form-label">Usuário</label>
-    <input type="text" name="usuario" class="form-control" required>
-  </div>
-  <div class="mb-3">
-    <label class="form-label">Senha</label>
-    <input type="password" name="senha" class="form-control" required>
-  </div>
-  <button class="btn btn-primary" type="submit">Login</button>
-</form>
-    {% endif %}
-=======
-                const nomeUnico = [...alunosVisiveis][0];
-                contratado = horasContratadasPorAluno[nomeUnico] || 0;
-            } else {
-                contratado = totalContratadoTodos || 0; 
-            }
-            saldo = contratado - totalHorasCalculado;
         }
         
-        const saldoHorasSpan = document.getElementById("saldoHoras");
-        if (saldoHorasSpan) saldoHorasSpan.innerText = saldo.toFixed(2) + "h";
-
-        const nenhumaAulaRow = tabelaAulasBody.querySelector("tr td[colspan='9']");
+        const nenhumaAulaRow = tabelaAulasBody.querySelector("tr td[colspan='10']");
         if (!algumaLinhaVisivel) {
             if (!nenhumaAulaRow) {
-                const tr = document.createElement('tr');
-                const td = document.createElement('td');
-                td.setAttribute('colspan', '9');
-                td.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300 text-center';
+                const tr = document.createElement('tr'); const td = document.createElement('td');
+                td.setAttribute('colspan', '10'); td.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300 text-center';
                 td.textContent = 'Nenhuma aula disponível para os filtros selecionados.';
-                tr.appendChild(td);
-                tabelaAulasBody.appendChild(tr);
-            } else {
-                 nenhumaAulaRow.parentElement.style.display = ""; 
-            }
-        } else {
-            if (nenhumaAulaRow) {
-                nenhumaAulaRow.parentElement.style.display = "none"; 
-            }
-        }
+                tr.appendChild(td); tabelaAulasBody.appendChild(tr);
+            } else { nenhumaAulaRow.parentElement.style.display = ""; }
+        } else { if (nenhumaAulaRow) nenhumaAulaRow.parentElement.style.display = "none"; }
     }
 
     document.querySelectorAll('.btn-excluir').forEach(button => {
         button.addEventListener('click', function () {
             if (!confirm("Tem certeza que deseja excluir esta aula?")) return;
-
             const aulaId = this.getAttribute('data-id');
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]') ? document.querySelector('[name=csrfmiddlewaretoken]').value : '{{ csrf_token }}';
+            const csrfTokenInput = document.querySelector('form[method="post"] input[name="csrfmiddlewaretoken"]');
+            const csrfToken = csrfTokenInput ? csrfTokenInput.value : '';
+
+            if (!csrfToken) { alert("Erro de segurança (CSRF). Recarregue a página."); return; }
 
             fetch(`/excluir-aula/${aulaId}/`, { 
-                method: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRFToken': csrfToken, 
-                },
+                method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': csrfToken }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'ok') {
-                    this.closest('tr').remove();
-                    popularFiltros(); 
-                    aplicarFiltro(); 
-                } else {
-                    alert("Erro ao excluir: " + (data.mensagem || "Erro desconhecido."));
-                }
+            .then(response => response.json().then(data => ({ok: response.ok, data})))
+            .then(({ok, data}) => {
+                if (ok && data.status === 'ok') {
+                    this.closest('tr').remove(); popularFiltros(); aplicarFiltro();
+                } else { alert("Erro ao excluir: " + (data.mensagem || "Erro desconhecido.")); }
             })
-            .catch((error) => {
-                console.error("Erro de conexão ao excluir a aula:", error);
-                alert("Erro de conexão ao excluir a aula.");
-            });
+            .catch(error => { console.error("Erro JS: excluir aula", error); alert("Erro de conexão ao excluir."); });
         });
     });
 
-    if (dataInicio) dataInicio.addEventListener("change", aplicarFiltro);
-    if (dataFim) dataFim.addEventListener("change", aplicarFiltro);
-    if (filtroProfessor) filtroProfessor.addEventListener("input", aplicarFiltro);
-    if (filtroAluno) filtroAluno.addEventListener("input", aplicarFiltro);
+    if (dataInicioEl) dataInicioEl.addEventListener("change", aplicarFiltro);
+    if (dataFimEl) dataFimEl.addEventListener("change", aplicarFiltro);
+    if (filtroProfessorEl) filtroProfessorEl.addEventListener("input", aplicarFiltro);
+    if (filtroAlunoEl) filtroAlunoEl.addEventListener("input", aplicarFiltro);
 
-    if (document.querySelector("#tabelaAulas tbody tr td[colspan='9']") === null) { 
-       popularFiltros();
-    }
+    const hasDataRows = Array.from(tabelaAulasBody.querySelectorAll("tr")).some(
+        row => row.children.length >= 10 && !row.querySelector("td[colspan='10']")
+    );
+    if (hasDataRows) popularFiltros();
     aplicarFiltro(); 
 });
 </script>
 {% endif %}
 
->>>>>>> main
 {% endblock %}
