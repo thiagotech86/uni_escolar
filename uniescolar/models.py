@@ -49,7 +49,7 @@ class Professor(models.Model):
     materia = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"Professor: {self.user.username}"
+        return f"{self.user.username}"
     
 
 class Gestor(models.Model):
@@ -156,7 +156,7 @@ class Aula(models.Model):
         on_delete=models.CASCADE, 
         related_name="aulas_ministradas"
     )
-    descricao = models.CharField(max_length=200)
+    descricao = models.TextField()
     status_aprovacao = models.CharField( # NOVO CAMPO
         max_length=10,
         choices=STATUS_APROVACAO_CHOICES,

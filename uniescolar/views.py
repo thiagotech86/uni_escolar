@@ -348,3 +348,11 @@ def register_user(request):
     else:
         user_form = SignUpForm()
     return render(request, "register.html", {'user_form': user_form})
+
+def aula_detail(request,id):
+    if request.user.is_authenticated:
+        aulas=Aula.objects.get(id=id) # Buscar objeto pelo id
+        return render (request,'aula_detail.html',{'aula_detail':aulas})
+    else:
+        messages.error(request,'Você precisa estar logado')
+        return redirect('home')

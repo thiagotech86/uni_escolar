@@ -93,7 +93,7 @@
                             {% endif %} hover:bg-gray-100 dark:hover:bg-gray-700/80 transition-colors duration-150">
                             
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
-                                <a href="{% url 'aula' aula_item.id %}">{{ aula_item.id }}</a>
+                                <a href="{% url 'aula_detail' aula_item.id %}">{{ aula_item.id }}</a>
                             </td>
                             {# O texto da célula herda a cor da linha (<tr>) via 'current-color' ou tem um fallback #}
                             <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %}">{{ aula_item.disciplina.nome }}</td>
