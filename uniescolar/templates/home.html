@@ -47,7 +47,7 @@
                 <label for="dataFim" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Até:</label>
                 <input type="date" id="dataFim" class="form-input-custom w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-50 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
             </div>
-            {% if user_is_gestor or not user.professor_profile %}
+            {% if user_is_gestor and not user.professor_profile or user.responsavel_profiles.exists %}
             <div>
                 <label for="filtroProfessor" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Professor:</label>
                 <select id="filtroProfessor" class="form-input-custom w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-50 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
