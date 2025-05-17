@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load static %} {# Certifique-se que static está carregado se usar {% static %} em outro lugar no base.html original #}
+{% load time_filters %} {# Carrega os filtros customizados que criamos #}
 
 {% block title %}Página Inicial - Universo Escolar{% endblock %}
 
@@ -11,22 +13,22 @@
 
         {# Seção de Totais e Saldos #}
         <div class="flex flex-col sm:flex-row justify-around items-center mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow">
-            <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2 sm:mb-0">
-                Total Hora/Aula (Visíveis): <span id="totalHoras" class="text-blue-600 dark:text-blue-400">{{ total_horas_aulas_filtradas|default:"0.00" }}h</span>
-            </h4>
+            {% comment %} <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2 sm:mb-0">
+                Total Hora/Aula (Visíveis): <span id="totalHoras" class="text-blue-600 dark:text-blue-400">{{ total_horas_aulas_filtradas|format_hours_minutes }}</span>
+            </h4> {% endcomment %}
             
             {% if user.responsavel_profiles.exists %} 
                 <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2 sm:mb-0">
-                    Horas Contratadas: <span class="text-blue-600 dark:text-blue-400">{{ total_contratado_responsavel|default:"0" }}h</span>
+                    Horas Contratadas: <span class="text-blue-600 dark:text-blue-400">{{ total_contratado_responsavel|format_hours_minutes }}</span>
                 </h4>
                 <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2 sm:mb-0">
-                    Horas Utilizadas: <span class="text-orange-500 dark:text-orange-400">{{ total_utilizado_responsavel|floatformat:2|default:"0.00" }}h</span>
+                    Horas Utilizadas: <span class="text-orange-500 dark:text-orange-400">{{ total_utilizado_responsavel|format_hours_minutes }}</span>
                 </h4>
                 <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2 sm:mb-0">
                     Saldo de Horas: 
                     <span id="saldoHorasResponsavel" 
                           class="font-bold {% if saldo_horas_responsavel < 0 %}text-red-600 dark:text-red-400{% else %}text-green-600 dark:text-green-400{% endif %}">
-                          {{ saldo_horas_responsavel|floatformat:2|default:"0.00" }}h
+                          {{ saldo_horas_responsavel|format_hours_minutes }}
                     </span>
                 </h4>
             {% else %}
@@ -34,6 +36,7 @@
             {% endif %}
         </div>
 
+        {# Filtros #}
         {% if aulas %}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow">
             <div>
@@ -65,18 +68,19 @@
 
         <hr class="border-t border-gray-300 dark:border-gray-600 my-6">
 
+        {# Tabela de Aulas #}
         <div class="overflow-x-auto bg-white dark:bg-gray-800 shadow-xl rounded-lg">
             <table id="tabelaAulas" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-200 dark:bg-gray-700"> 
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Relatório</th> 
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Disciplina</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Data</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Início</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Término</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Aluno</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Professor</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Duração (h)</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Duração</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Status</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Ações</th>
                     </tr>
@@ -84,27 +88,29 @@
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {% if aulas %}
                         {% for aula_item in aulas %}
-                        
                         <tr class="
                             {% if aula_item.status_aprovacao == 'pendente' %}bg-orange-300 text-orange-950 dark:bg-orange-600/70 dark:text-orange-100
                             {% elif aula_item.status_aprovacao == 'aprovada' %}bg-green-300 text-green-950 dark:bg-green-600/60 dark:text-green-100
                             {% elif aula_item.status_aprovacao == 'rejeitada' %}bg-red-300 text-red-950 dark:bg-red-600/70 dark:text-red-100 opacity-90
-                            {% else %}text-gray-800 dark:text-gray-200  
+                            {% else %}text-gray-800 dark:text-gray-200    
                             {% endif %} hover:bg-gray-100 dark:hover:bg-gray-700/80 transition-colors duration-150">
                             
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
-                                <a href="{% url 'aula_detail' aula_item.id %}">{{ aula_item.id }}</a>
+                            {# MODIFICADO: Célula do ID agora é um botão "Relatório" #}
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <a href="{% url 'aula_detail' aula_item.id %}" 
+                                   class="text-xs bg-sky-500 hover:bg-sky-600 text-white font-semibold py-1 px-3 rounded-md shadow hover:shadow-md transition-all duration-150 ease-in-out">
+                                   Relatório
+                                </a>
                             </td>
-                            {# O texto da célula herda a cor da linha (<tr>) via 'current-color' ou tem um fallback #}
                             <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %}">{{ aula_item.disciplina.nome }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %} filtro-data" data-date="{{ aula_item.data_inicio|date:'Y-m-d' }}">{{ aula_item.data_inicio|date:"d/m/Y" }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %} hora-inicio">{{ aula_item.hora_inicio|time:"H:i" }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %} hora-fim">{{ aula_item.hora_fim|time:"H:i" }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %}">{{ aula_item.aluno.nome }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %}">{{ aula_item.professor.user.username }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %} duracao">{{ aula_item.duracao_calculada|default:"0.00" }}</td>
-                            
-                            
+                            <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %} duracao" data-decimal-value="{{ aula_item.duracao_calculada }}">
+                                {{ aula_item.duracao_calculada|format_hours_minutes }}
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold 
                                 {% if aula_item.status_aprovacao == 'aprovada' %}text-green-700 dark:text-green-300
                                 {% elif aula_item.status_aprovacao == 'pendente' %}text-orange-700 dark:text-orange-300
@@ -114,12 +120,9 @@
                                 {{ aula_item.get_status_aprovacao_display }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                
                                 {% if user_is_gestor and aula_item.status_aprovacao == 'pendente' %}
                                     <div class="flex space-x-2">
-                                        <a href="{% url 'editar_aprovar_aula_gestor' aula_item.id %}" class="text-xs bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-2 rounded shadow hover:shadow-md transition-all duration-150">
-                                            Editar
-                                        </a>
+                                        <a href="{% url 'editar_aprovar_aula_gestor' aula_item.id %}" class="text-xs bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-2 rounded shadow hover:shadow-md transition-all duration-150">Editar</a>
                                         <form action="{% url 'aprovar_aula' aula_item.id %}" method="POST" class="inline">
                                             {% csrf_token %}
                                             <button type="submit" class="text-xs bg-green-500 hover:bg-green-600 text-white font-semibold py-1 px-2 rounded shadow hover:shadow-md transition-all duration-150">Aprovar</button>
@@ -130,7 +133,6 @@
                                         </form>
                                     </div>
                                 {% endif %}
-                                
                                 {% if user_is_gestor or user.professor_profile == aula_item.professor and aula_item.status_aprovacao == 'pendente' %}
                                 <button class="btn-excluir mt-1 bg-red-500 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded text-xs shadow hover:shadow-md transition-all duration-150" data-id="{{ aula_item.id }}">Excluir</button>
                                 {% elif not user_is_gestor and aula_item.status_aprovacao != 'pendente' and user.professor_profile == aula_item.professor %}
@@ -204,7 +206,10 @@
 
 {% if user.is_authenticated and aulas %}
 <script>
+    const CSRF_TOKEN = "{{ csrf_token }}"; 
+</script>
 
+<script>
 document.addEventListener("DOMContentLoaded", function () {
     const dataInicioEl = document.getElementById("dataInicio");
     const dataFimEl = document.getElementById("dataFim");
@@ -217,33 +222,65 @@ document.addEventListener("DOMContentLoaded", function () {
     let horasContratadasPorAluno = {};
     try {
         const dadosContratadosElement = document.getElementById("dadosContratadosPorAluno");
-        if (dadosContratadosElement) horasContratadasPorAluno = JSON.parse(dadosContratadosElement.textContent);
-    } catch (e) { console.error("Erro JS: dadosContratadosPorAluno", e); }
+        if (dadosContratadosElement) {
+            horasContratadasPorAluno = JSON.parse(dadosContratadosElement.textContent);
+        }
+    } catch (e) { 
+        console.error("Erro JS: Falha ao parsear dadosContratadosPorAluno", e); 
+    }
     
+    function formatDecimalHoursToXHMY(decimalHours) {
+        const numDecimalHours = parseFloat(decimalHours);
+        if (isNaN(numDecimalHours)) { return "0h00"; }
+        const sign = numDecimalHours < 0 ? "-" : ""; 
+        const absDecimalHours = Math.abs(numDecimalHours);
+        const hours = Math.floor(absDecimalHours);
+        let minutes = Math.round((absDecimalHours - hours) * 60);
+        let adjustedHours = hours;
+        if (minutes === 60) { 
+            adjustedHours += 1; 
+            minutes = 0; 
+        }
+        const paddedMinutes = minutes < 10 ? '0' + minutes : minutes.toString();
+        return `${sign}${adjustedHours}h${paddedMinutes}`;
+    }
+
     function popularFiltros() {
         const professores = new Set();
         const alunos = new Set();
-        document.querySelectorAll("#tabelaAulas tbody tr").forEach(row => {
-            if (row.children.length >= 10 && !row.querySelector("td[colspan='10']")) { 
-                const alunoNome = row.children[5]?.textContent.trim();
-                const profNome = row.children[6]?.textContent.trim();
-                if (alunoNome) alunos.add(alunoNome);
-                if (profNome) professores.add(profNome);
-            }
-        });
+        if (tabelaAulasBody) { 
+            document.querySelectorAll("#tabelaAulas tbody tr").forEach(row => {
+                if (row.children.length >= 10 && !row.querySelector("td[colspan='10']")) { 
+                    const alunoNome = row.children[5]?.textContent.trim();
+                    const profNome = row.children[6]?.textContent.trim();
+                    if (alunoNome) alunos.add(alunoNome);
+                    if (profNome) professores.add(profNome);
+                }
+            });
+        }
 
         if (filtroProfessorEl) {
+            const selectedProf = filtroProfessorEl.value; 
             while (filtroProfessorEl.options.length > 1) filtroProfessorEl.remove(1);
             professores.forEach(nome => { if(nome){ const opt = document.createElement("option"); opt.value = nome; opt.textContent = nome; filtroProfessorEl.appendChild(opt); }});
+            if (Array.from(filtroProfessorEl.options).some(opt => opt.value === selectedProf)) { 
+                filtroProfessorEl.value = selectedProf; 
+            }
         }
         if (filtroAlunoEl) {
+            const selectedAluno = filtroAlunoEl.value; 
             while (filtroAlunoEl.options.length > 1) filtroAlunoEl.remove(1);
             alunos.forEach(nome => { if(nome){ const opt = document.createElement("option"); opt.value = nome; opt.textContent = nome; filtroAlunoEl.appendChild(opt); }});
+            if (Array.from(filtroAlunoEl.options).some(opt => opt.value === selectedAluno)) { 
+                filtroAlunoEl.value = selectedAluno; 
+            }
         }
     }
 
     function aplicarFiltro() {
-        if (!tabelaAulasBody) return; 
+        if (!tabelaAulasBody) { 
+            return; 
+        }
         const inicioVal = dataInicioEl ? dataInicioEl.value : null;
         const fimVal = dataFimEl ? dataFimEl.value : null;
         const profVal = filtroProfessorEl ? filtroProfessorEl.value.toLowerCase() : "";
@@ -252,7 +289,9 @@ document.addEventListener("DOMContentLoaded", function () {
         let algumaLinhaVisivel = false;
 
         const nenhumaAulaRowExistente = tabelaAulasBody.querySelector("tr td[colspan='10']");
-        if (nenhumaAulaRowExistente) nenhumaAulaRowExistente.parentElement.style.display = "none";
+        if (nenhumaAulaRowExistente) {
+            nenhumaAulaRowExistente.parentElement.style.display = "none"; 
+        }
 
         document.querySelectorAll("#tabelaAulas tbody tr").forEach(row => {
             if (row.children.length === 1 && row.children[0].getAttribute('colspan')) return;
@@ -261,10 +300,10 @@ document.addEventListener("DOMContentLoaded", function () {
             const dataRowVal = row.querySelector(".filtro-data")?.getAttribute("data-date");
             const profRowVal = row.children[6]?.textContent.toLowerCase();
             const alunoRowVal = row.children[5]?.textContent.toLowerCase();
-            const horasAula = parseFloat(row.querySelector(".duracao")?.innerText.replace(",", ".")) || 0;
+            const horasAulaStr = row.querySelector(".duracao")?.dataset.decimalValue;
+            const horasAula = parseFloat(horasAulaStr) || 0;
             const statusAulaTd = row.children[8]; 
             const statusAulaText = statusAulaTd?.textContent.trim().toLowerCase();
-
 
             let visivel = true;
             if (inicioVal && dataRowVal < inicioVal) visivel = false;
@@ -272,7 +311,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (profVal && profRowVal !== profVal) visivel = false; 
             if (alunoVal && alunoRowVal !== alunoVal) visivel = false; 
             
-            row.style.display = visivel ? "" : "none";
+            row.style.display = visivel ? "" : "none"; 
             if (visivel) {
                 algumaLinhaVisivel = true;
                 if (statusAulaText === 'aprovada') { 
@@ -281,58 +320,93 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
         
-        if (totalHorasSpan) totalHorasSpan.innerText = totalHorasCalculadoJS.toFixed(2) + "h";
+        if (totalHorasSpan) totalHorasSpan.innerText = formatDecimalHoursToXHMY(totalHorasCalculadoJS);
 
         if (saldoHorasAlunoSpan) { 
             if (alunoVal && filtroAlunoEl && horasContratadasPorAluno[filtroAlunoEl.value]) {
-                const contratado = horasContratadasPorAluno[filtroAlunoEl.value] || 0;
+                const contratado = parseFloat(horasContratadasPorAluno[filtroAlunoEl.value]) || 0;
                 let horasAprovadasAlunoFiltrado = 0;
                  document.querySelectorAll("#tabelaAulas tbody tr").forEach(row_saldo => {
                     if(row_saldo.style.display !== "none" && 
                        row_saldo.children[5]?.textContent.toLowerCase() === alunoVal &&
                        row_saldo.children[8]?.textContent.trim().toLowerCase() === 'aprovada' ){
-                        horasAprovadasAlunoFiltrado += parseFloat(row_saldo.querySelector(".duracao")?.innerText.replace(",", ".")) || 0;
+                        const horasAulaSaldoStr = row_saldo.querySelector(".duracao")?.dataset.decimalValue;
+                        horasAprovadasAlunoFiltrado += parseFloat(horasAulaSaldoStr) || 0;
                     }
                  });
                 const saldo = contratado - horasAprovadasAlunoFiltrado;
-                saldoHorasAlunoSpan.innerText = saldo.toFixed(2) + "h";
+                saldoHorasAlunoSpan.innerText = formatDecimalHoursToXHMY(saldo);
                 saldoHorasAlunoSpan.className = 'font-semibold ' + (saldo < 0 ? 'text-red-500 dark:text-red-400' : 'text-green-500 dark:text-green-400');
             } else {
-                saldoHorasAlunoSpan.innerText = "-";
+                saldoHorasAlunoSpan.innerText = "-"; 
                 saldoHorasAlunoSpan.className = 'text-green-500 dark:text-green-400'; 
             }
         }
         
         const nenhumaAulaRow = tabelaAulasBody.querySelector("tr td[colspan='10']");
         if (!algumaLinhaVisivel) {
-            if (!nenhumaAulaRow) {
-                const tr = document.createElement('tr'); const td = document.createElement('td');
-                td.setAttribute('colspan', '10'); td.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300 text-center';
+            if (!nenhumaAulaRow) { 
+                const tr = document.createElement('tr'); 
+                const td = document.createElement('td');
+                td.setAttribute('colspan', '10'); 
+                td.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300 text-center';
                 td.textContent = 'Nenhuma aula disponível para os filtros selecionados.';
-                tr.appendChild(td); tabelaAulasBody.appendChild(tr);
-            } else { nenhumaAulaRow.parentElement.style.display = ""; }
-        } else { if (nenhumaAulaRow) nenhumaAulaRow.parentElement.style.display = "none"; }
+                tr.appendChild(td); 
+                if (tabelaAulasBody) tabelaAulasBody.appendChild(tr);
+            } else { 
+                nenhumaAulaRow.parentElement.style.display = ""; 
+            }
+        } else { 
+            if (nenhumaAulaRow) nenhumaAulaRow.parentElement.style.display = "none"; 
+        }
     }
 
-    document.querySelectorAll('.btn-excluir').forEach(button => {
+    const botoesExcluir = document.querySelectorAll('.btn-excluir');
+    botoesExcluir.forEach(button => {
         button.addEventListener('click', function () {
-            if (!confirm("Tem certeza que deseja excluir esta aula?")) return;
-            const aulaId = this.getAttribute('data-id');
-            const csrfTokenInput = document.querySelector('form[method="post"] input[name="csrfmiddlewaretoken"]');
-            const csrfToken = csrfTokenInput ? csrfTokenInput.value : '';
+            if (!confirm("Tem certeza que deseja excluir esta aula?")) {
+                return;
+            }
 
-            if (!csrfToken) { alert("Erro de segurança (CSRF). Recarregue a página."); return; }
+            const aulaId = this.getAttribute('data-id');
+            const csrfToken = CSRF_TOKEN; 
+
+            if (!csrfToken || csrfToken === "NOTPROVIDED" || csrfToken.includes("{" + "% csrf" + "_token %" + "}")) { 
+                alert("Erro de segurança (CSRF). Token não encontrado ou inválido. Recarregue a página."); 
+                console.error("CSRF Token inválido ou não processado:", csrfToken);
+                return; 
+            }
 
             fetch(`/excluir-aula/${aulaId}/`, { 
-                method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': csrfToken }
+                method: 'POST', 
+                headers: { 
+                    'X-Requested-With': 'XMLHttpRequest', 
+                    'X-CSRFToken': csrfToken 
+                }
             })
-            .then(response => response.json().then(data => ({ok: response.ok, data})))
-            .then(({ok, data}) => {
-                if (ok && data.status === 'ok') {
-                    this.closest('tr').remove(); popularFiltros(); aplicarFiltro();
-                } else { alert("Erro ao excluir: " + (data.mensagem || "Erro desconhecido.")); }
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errData => {
+                        throw new Error(errData.mensagem || `Erro ${response.status} ao excluir.`);
+                    }).catch(() => {
+                        throw new Error(`Erro HTTP ${response.status} ao excluir: ${response.statusText}`);
+                    });
+                }
+                return response.json(); 
             })
-            .catch(error => { console.error("Erro JS: excluir aula", error); alert("Erro de conexão ao excluir."); });
+            .then(data_json => { 
+                if (data_json.status === 'ok') {
+                    this.closest('tr').remove(); 
+                    popularFiltros(); 
+                    aplicarFiltro();  
+                } else { 
+                    alert("Erro ao excluir: " + (data_json.mensagem || "Erro desconhecido.")); 
+                }
+            })
+            .catch(error => { 
+                console.error("Erro geral no fetch ao excluir aula:", error);
+                alert(error.message || "Erro de conexão ao tentar excluir a aula."); 
+            });
         });
     });
 
@@ -341,13 +415,21 @@ document.addEventListener("DOMContentLoaded", function () {
     if (filtroProfessorEl) filtroProfessorEl.addEventListener("input", aplicarFiltro);
     if (filtroAlunoEl) filtroAlunoEl.addEventListener("input", aplicarFiltro);
 
-    const hasDataRows = Array.from(tabelaAulasBody.querySelectorAll("tr")).some(
-        row => row.children.length >= 10 && !row.querySelector("td[colspan='10']")
-    );
-    if (hasDataRows) popularFiltros();
+    if (tabelaAulasBody) { 
+        const hasDataRows = Array.from(tabelaAulasBody.querySelectorAll("tr")).some(
+            row => row.children.length >= 10 && !row.querySelector("td[colspan='10']")
+        );
+        if (hasDataRows) {
+            popularFiltros(); 
+        }
+    }
     aplicarFiltro(); 
 });
+ </script>
+{% verbatim %} 
+
 </script>
+{% endverbatim %}
 {% endif %}
 
 {% endblock %}

@@ -2,13 +2,13 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.contrib import admin
-from datetime import datetime, date
+from datetime import datetime, date, time
 
 def hora_inicio_padrao():
-    return timezone.datetime.strptime("08:00", "%H:%M").time()
+    return time(8, 0)
 
 def hora_fim_padrao():
-    return timezone.datetime.strptime("09:00", "%H:%M").time()
+    return time(9, 0)
 
 class Usuario(models.Model):
     cpf = models.CharField(max_length=14, primary_key=True)
@@ -97,26 +97,42 @@ class Aluno(models.Model):
     )
 
     def horas_contratadas(self):
-        if self.responsavel: # Garante que o aluno tem um responsável vinculado
-            
+        if self.responsavel:
+            # Soma as horas de todos os pacotes associados ao responsável deste aluno.
+            # Se um pacote é para um responsável, ele se aplica a todos os seus dependentes.
             total_horas = sum(pacote.horas_contratadas for pacote in self.responsavel.pacotes_hora.all())
             return total_horas
-        return 0 #
+        return 0
 
     def horas_utilizadas(self):
-            total_segundos = 0
+        """
+        Calcula o total de horas de aulas efetivamente utilizadas (status 'aprovada') por este aluno.
+        Retorna um float representando o total de horas.
+        """
+        total_segundos = 0
         # Filtra apenas aulas APROVADAS para o cálculo de horas utilizadas
-            for aula in self.aulas.filter(status_aprovacao='aprovada'):
-                if aula.hora_inicio and aula.hora_fim:
-                    data_referencia = aula.data_inicio if aula.data_inicio else date.today()
+        aulas_aprovadas = self.aulas.filter(status_aprovacao='aprovada')
+
+        for aula in aulas_aprovadas:
+            if aula.hora_inicio and aula.hora_fim:
+                
+                data_referencia = aula.data_inicio if aula.data_inicio else date.today()
+                
                 try:
-                    inicio = datetime.combine(data_referencia, aula.hora_inicio)
-                    fim = datetime.combine(data_referencia, aula.hora_fim)
-                    if fim > inicio:
-                        total_segundos += (fim - inicio).total_seconds()
-                except TypeError: # Caso hora_inicio/fim não sejam objetos time válidos
-                    pass # Ignora esta aula no cálculo
-                    return round(total_segundos / 3600, 2)
+                    
+                    inicio_dt = datetime.combine(data_referencia, aula.hora_inicio)
+                    fim_dt = datetime.combine(data_referencia, aula.hora_fim)
+                    
+                    
+                    if fim_dt > inicio_dt:
+                        total_segundos += (fim_dt - inicio_dt).total_seconds()
+                except TypeError:
+                    
+                    print(f"AVISO: Aula ID {aula.id} com data/hora inválida para cálculo de duração.")
+                    pass 
+        
+       
+        return round(total_segundos / 3600, 2)
 
     def __str__(self):
         return self.nome
@@ -165,3 +181,19 @@ class Aula(models.Model):
 
     def __str__(self):
         return f"Aula de {self.disciplina} para {self.aluno.nome} ({self.get_status_aprovacao_display()})"
+
+@property
+def duracao_calculada(self):
+        
+        if self.hora_inicio and self.hora_fim and self.data_inicio:
+            try:
+                inicio_dt = datetime.combine(self.data_inicio, self.hora_inicio)
+                fim_dt = datetime.combine(self.data_inicio, self.hora_fim)
+                if fim_dt > inicio_dt:
+                    return round((fim_dt - inicio_dt).total_seconds() / 3600, 2)
+            except TypeError:
+                return 0.0 # Em caso de erro de tipo (ex: hora_inicio/fim não são time)
+        return 0.0
+
+def __str__(self):
+        return f"Aula de {self.disciplina.nome} para {self.aluno.nome} em {self.data_inicio.strftime('%d/%m/%Y')} ({self.get_status_aprovacao_display()})"

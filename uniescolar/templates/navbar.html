@@ -4,30 +4,39 @@
             <div class="flex-shrink-0">
                 <a href="{% url 'home' %}" class="text-white text-xl font-bold">Universo Escolar</a>
             </div>
- 
-            
+
             <div class="hidden md:flex items-center space-x-4">
-                
-                
                 <button id="headerDarkModeIcon" class="text-gray-200 hover:text-white text-xl focus:outline-none" aria-label="Alternar Modo Escuro/Claro">
                     <i class="fas fa-moon"></i> 
                 </button>
- 
-                {# Links de Navegação Desktop #}
-                
+
                 {% if user.is_authenticated %}
+                    {# --- Usuário Autenticado --- #}
+
+                    {# Botão para Gestor (staff) cadastrar novo usuário #}
+                    {% if user.is_staff %} {# ATENÇÃO: Ajuste esta condição se necessário (ex: user.is_gestor, perms.auth.add_user) #}
+                        <a href="{% url 'register' %}" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Cadastrar Usuário</a>
+                    {% endif %}
+
+                    {# Botão para cadastrar aula (se tiver permissão) #}
                     {% if can_add_aula_permission %}
                         <a href="{% url 'add_aula' %}" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Cadastrar Aula</a>
                     {% endif %}
+
                     <a href="{% url 'logout' %}" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Logout</a>
                 {% else %}
-                    <a href="{% url 'register' %}" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Cadastro</a>
+                    {# --- Usuário Não Autenticado --- #}
+
+                    {# Botão de Cadastro (não aparece na home) #}
+                    {% if request.resolver_match.url_name != 'home' %}
+                        <a href="{% url 'register' %}" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Cadastro</a>
+                    {% endif %}
                     
+                    {# Botão de Login (aponta para a home, conforme seu código original) #}
                     <a href="{% url 'home' %}" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
                 {% endif %}
             </div>
- 
-            
+
             <div class="md:hidden flex items-center">
                 <button id="headerDarkModeIconMobile" class="text-gray-200 hover:text-white text-xl focus:outline-none mr-2 sm:mr-3" aria-label="Alternar Modo Escuro/Claro">
                     <i class="fas fa-moon"></i>
@@ -41,23 +50,41 @@
             </div>
         </div>
     </div>
- 
-  
+
     <div id="mobile-menu" class="md:hidden hidden bg-blue-600 dark:bg-blue-700">
         <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-           
             {% if user.is_authenticated %}
-             {% if can_add_aula_permission %}
+                {# --- Usuário Autenticado - Mobile --- #}
+
+                {# Botão para Gestor (staff) cadastrar novo usuário #}
+                {% if user.is_staff %} {# ATENÇÃO: Ajuste esta condição se necessário (ex: user.is_gestor, perms.auth.add_user) #}
+                    <a href="{% url 'register' %}" class="text-gray-200 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Cadastrar Usuário</a>
+                {% endif %}
+
+                {# Botão para cadastrar aula (se tiver permissão) #}
+                {% if can_add_aula_permission %}
                     <a href="{% url 'add_aula' %}" class="text-gray-200 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Cadastrar Aula</a>
-             {% endif %}
-                {# ... #}
+                {% endif %}
+
+                <a href="{% url 'logout' %}" class="text-gray-200 hover:text-white block px-3 py-2 rounded-md text-sm font-medium">Logout</a>
+            {% else %} {# DEBUG: A TemplateSyntaxError aponta para esta linha (69). Verifique se há caracteres invisíveis ou problemas de codificação no arquivo se o erro persistir. A estrutura do if/else/endif parece correta. #}
+                {# --- Usuário Não Autenticado - Mobile --- #}
+
+                {# Botão de Cadastro (não aparece na home) #}
+                {% if request.resolver_match.url_name != 'home' %}
+                    <a href="{% url 'register' %}" class="text-gray-200 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Cadastro</a>
+                {% endif %}
+
+                {# Botão de Login (aponta para a home, conforme seu código original) #}
+                <a href="{% url 'home' %}" class="text-gray-200 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Login</a>
             {% endif %}
         </div>
     </div>
 </nav>
- 
 
 <script>
+    // Seu JavaScript existente para o menu mobile e dark mode.
+    // Nenhuma alteração necessária aqui para a lógica dos botões.
     document.addEventListener('DOMContentLoaded', function () {
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
@@ -70,26 +97,28 @@
             });
         }
 
+        // Lógica do Dark Mode para o botão mobile (assumindo que toggleTheme é global)
         const mobileThemeToggleBtn = document.getElementById('headerDarkModeIconMobile');
-        
-        // A função global `toggleTheme` é definida em base.html
-        if (mobileThemeToggleBtn && typeof toggleTheme === 'function') {
+        if (mobileThemeToggleBtn && typeof toggleTheme === 'function') { // Verifica se a função global existe
             mobileThemeToggleBtn.addEventListener('click', () => {
                 toggleTheme(); 
             });
         }
 
-        const siteBodyInitial = document.body;
-        const mobileThemeBtnInitial = document.getElementById('headerDarkModeIconMobile');
-        if (mobileThemeBtnInitial) {
-            const iconMobile = mobileThemeBtnInitial.querySelector('i');
-            if (iconMobile) {
-                if (siteBodyInitial.classList.contains('dark-mode')) {
-                    iconMobile.classList.remove('fa-moon');
-                    iconMobile.classList.add('fa-sun');
+        // Atualização inicial do ícone do dark mode no mobile
+        // Esta seção depende da existência e funcionamento de `applyTheme` ou similar no seu escopo global (base.html)
+        // e como o estado inicial do tema é determinado.
+        const siteBodyForIconUpdate = document.body; 
+        const mobileThemeIconInitial = document.getElementById('headerDarkModeIconMobile');
+        if (mobileThemeIconInitial) {
+            const iconElement = mobileThemeIconInitial.querySelector('i');
+            if (iconElement) {
+                if (siteBodyForIconUpdate.classList.contains('dark-mode')) { // Verifica se o tema escuro está ativo
+                    iconElement.classList.remove('fa-moon');
+                    iconElement.classList.add('fa-sun');
                 } else {
-                    iconMobile.classList.remove('fa-sun');
-                    iconMobile.classList.add('fa-moon');
+                    iconElement.classList.remove('fa-sun');
+                    iconElement.classList.add('fa-moon');
                 }
             }
         }
