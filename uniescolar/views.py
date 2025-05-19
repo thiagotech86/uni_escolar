@@ -31,7 +31,7 @@ def home(request):
             actual_user_type_matches = False
             is_responsavel = hasattr(user, 'responsavel_profiles') and user.responsavel_profiles.exists()
             is_professor = hasattr(user, 'professor_profile')
-            is_gestor = is_gestor_check(user) # Usa a função auxiliar
+            is_gestor = is_gestor_check(user) 
 
             if user_type_selected == 'aluno_responsavel' and is_responsavel:
                 actual_user_type_matches = True
@@ -60,55 +60,86 @@ def home(request):
 
     # GET request: Exibir página
     aulas_list = []
-    total_horas_aulas_filtradas = timedelta() 
-    
-    # Dados para o JavaScript (filtros de aluno/professor)
+    total_horas_aulas_filtradas = timedelta()
     horas_contratadas_por_aluno_dict = {}
-    total_contratado_todos_alunos_val = 0.0 # Soma de todas as horas contratadas de todos os alunos (para JS)
-
-    # Variáveis para o contexto específico do Responsável logado
+    total_contratado_todos_alunos_val = 0.0
     total_contratado_responsavel_logado = 0
     total_utilizado_pelo_responsavel_logado = 0
     saldo_total_horas_responsavel = 0
-    
-    # Determina os perfis do usuário logado uma vez
+
     user_is_gestor_profile = False
-    user_is_professor_profile = False
+    user_is_professor_profile = False 
     user_is_responsavel_profile = False
+
+    
+    lista_de_alunos_para_filtro = Aluno.objects.all().order_by('nome') # Ou filtre conforme necessário
 
     if request.user.is_authenticated:
         user_is_gestor_profile = is_gestor_check(request.user)
-        user_is_professor_profile = hasattr(request.user, 'professor_profile')
+        user_is_professor_profile = hasattr(request.user, 'professor_profile') # Definir aqui
         user_is_responsavel_profile = hasattr(request.user, 'responsavel_profiles') and request.user.responsavel_profiles.exists()
 
         aulas_queryset = Aula.objects.none()
-
+        
+        # Exemplo:
         if user_is_gestor_profile:
-            aulas_queryset = Aula.objects.all().select_related('disciplina', 'aluno', 'professor__user').order_by('-data_inicio', '-hora_inicio')
+            aulas_queryset = Aula.objects.all()
         elif user_is_professor_profile:
             try:
-                aulas_queryset = Aula.objects.filter(professor=request.user.professor_profile).select_related('disciplina', 'aluno', 'professor__user').order_by('-data_inicio', '-hora_inicio')
+                aulas_queryset = Aula.objects.filter(professor=request.user.professor_profile)
             except Professor.DoesNotExist:
                 messages.error(request, "Perfil de professor não encontrado.")
+                aulas_queryset = Aula.objects.none()
         elif user_is_responsavel_profile:
             responsavel_instances = request.user.responsavel_profiles.all()
             aulas_queryset = Aula.objects.filter(
                 aluno__responsavel__in=responsavel_instances,
-                status_aprovacao='aprovada'
-            ).select_related('disciplina', 'aluno', 'professor__user').distinct().order_by('-data_inicio', '-hora_inicio')
+                status_aprovacao='aprovada' 
+            )
+
+        
+        data_de_str = request.GET.get('data_de')
+        data_ate_str = request.GET.get('data_ate')
+        aluno_id_str = request.GET.get('aluno')
+
+        if data_de_str:
+            try:
+                data_de = datetime.strptime(data_de_str, '%Y-%m-%d').date()
+                aulas_queryset = aulas_queryset.filter(data_inicio__gte=data_de)
+            except ValueError:
+                messages.error(request, "Formato de 'Data de' inválido.")
+
+        if data_ate_str:
+            try:
+                data_ate = datetime.strptime(data_ate_str, '%Y-%m-%d').date()
+                aulas_queryset = aulas_queryset.filter(data_inicio__lte=data_ate)
+            except ValueError:
+                messages.error(request, "Formato de 'Data até' inválido.")
+
+        if aluno_id_str:
+            try:
+                aluno_id = int(aluno_id_str)
+                aulas_queryset = aulas_queryset.filter(aluno__id=aluno_id)
+            except ValueError:
+                messages.error(request, "ID de aluno inválido para filtro.")
+
+        aulas_queryset = aulas_queryset.select_related('disciplina', 'aluno', 'professor__user').order_by('-data_inicio', '-hora_inicio')
+
 
         for aula_instance in aulas_queryset:
             aula_instance.duracao_calculada = 0.0
-            if aula_instance.hora_inicio and aula_instance.hora_fim:
-                dia_para_calculo = aula_instance.data_inicio if aula_instance.data_inicio else date.today()
+            if aula_instance.hora_inicio and aula_instance.hora_fim and aula_instance.data_inicio:
+                
+                dia_para_calculo = aula_instance.data_inicio
                 try:
                     datetime_inicio = datetime.combine(dia_para_calculo, aula_instance.hora_inicio)
                     datetime_fim = datetime.combine(dia_para_calculo, aula_instance.hora_fim)
                     if datetime_fim > datetime_inicio:
                         duracao_aula_timedelta = datetime_fim - datetime_inicio
+                        
                         if aula_instance.status_aprovacao == 'aprovada' or \
                            user_is_gestor_profile or \
-                           (user_is_professor_profile and aula_instance.professor == request.user.professor_profile):
+                           (user_is_professor_profile and hasattr(request.user, 'professor_profile') and aula_instance.professor == request.user.professor_profile):
                             total_horas_aulas_filtradas += duracao_aula_timedelta
                         aula_instance.duracao_calculada = round(duracao_aula_timedelta.total_seconds() / 3600, 2)
                 except TypeError:
@@ -127,30 +158,33 @@ def home(request):
             responsavel_instances = request.user.responsavel_profiles.all()
             
             for resp_instance in responsavel_instances:
-                # Garante que horas_contratadas seja um número antes de somar
+                
                 soma_pacotes_resp = sum(pacote.horas_contratadas for pacote in resp_instance.pacotes_hora.all() if isinstance(pacote.horas_contratadas, (int, float)))
                 total_contratado_responsavel_logado += soma_pacotes_resp
             
             alunos_do_responsavel_logado = Aluno.objects.filter(responsavel__in=responsavel_instances)
             for aluno_resp in alunos_do_responsavel_logado:
                 horas_usadas_aluno = aluno_resp.horas_utilizadas() 
-                if isinstance(horas_usadas_aluno, (int, float)): # CORREÇÃO APLICADA AQUI
+                if isinstance(horas_usadas_aluno, (int, float)): 
                     total_utilizado_pelo_responsavel_logado += horas_usadas_aluno
                 else:
-                    # Opcional: Logar que horas_utilizadas() retornou um tipo inesperado (None)
+                    
                     print(f"AVISO: Aluno ID {aluno_resp.id} - horas_utilizadas() retornou {type(horas_usadas_aluno)} em vez de um número.")
             
             saldo_total_horas_responsavel = total_contratado_responsavel_logado - total_utilizado_pelo_responsavel_logado
 
     context = {
         'aulas': aulas_list,
+        'todos_alunos': lista_de_alunos_para_filtro, 
         'total_horas_aulas_filtradas': round(total_horas_aulas_filtradas.total_seconds() / 3600, 2),
         'horas_contratadas_por_aluno_json': json.dumps(horas_contratadas_por_aluno_dict),
         'total_contratado_todos_alunos_json': json.dumps(total_contratado_todos_alunos_val),
         'user_is_gestor': user_is_gestor_profile,
+        'user_is_professor': user_is_professor_profile, 
         'total_contratado_responsavel': total_contratado_responsavel_logado if user_is_responsavel_profile else None,
         'total_utilizado_responsavel': total_utilizado_pelo_responsavel_logado if user_is_responsavel_profile else None,
         'saldo_horas_responsavel': saldo_total_horas_responsavel if user_is_responsavel_profile else None,
+        'request': request 
     }
     return render(request, 'home.html', context)
 
@@ -178,7 +212,7 @@ def add_aula(request):
             else: 
                 aula_instance.status_aprovacao = 'pendente'
             
-            # Se for professor não-gestor, garante que ele seja o professor da aula
+            
             if is_logged_user_professor and not is_logged_user_gestor:
                 aula_instance.professor = request.user.professor_profile
 
@@ -199,42 +233,71 @@ def add_aula(request):
 
 
 @login_required
-@user_passes_test(is_gestor_check, login_url='home')
-def editar_aprovar_aula_gestor(request, aula_id):
+def update_aula_view(request, aula_id):
     aula = get_object_or_404(Aula, id=aula_id)
+    user = request.user
 
-    if aula.status_aprovacao != 'pendente':
-        messages.error(request, "Apenas aulas com status 'Pendente' podem ser editadas desta forma.")
-        return redirect('home')
+    is_gestor = is_gestor_check(user)
+    is_professor_of_aula = hasattr(user, 'professor_profile') and aula.professor == user.professor_profile
 
+    # Lógica de permissão para edição
+    can_edit = False
+    if is_gestor:
+        can_edit = True 
+    elif is_professor_of_aula and aula.status_aprovacao == 'pendente':
+        can_edit = True # Professor pode editar SE a aula for dele E estiver pendente
+    
+    if not can_edit:
+        messages.error(request, "Você não tem permissão para editar esta aula ou o status da aula não permite edição por você.")
+        return redirect('detalhe_aula', id=aula.id) 
+
+    
     if request.method == 'POST':
         form = AddAulaForm(request.POST, instance=aula)
         if form.is_valid():
             aula_editada = form.save(commit=False)
 
-            if 'salvar_e_aprovar' in request.POST:
-                aula_editada.status_aprovacao = 'aprovada'
-                messages.success(request, f"Aula ID {aula_editada.id} ({aula_editada.disciplina}) foi editada e APROVADA com sucesso!")
-            elif 'salvar_pendente' in request.POST:
-                aula_editada.status_aprovacao = 'pendente' 
-                messages.success(request, f"Aula ID {aula_editada.id} ({aula_editada.disciplina}) foi editada e mantida como PENDENTE.")
-            else:
-                messages.warning(request, "Ação não especificada. Alterações salvas, mas o status da aula permanece Pendente.")
-                aula_editada.status_aprovacao = 'pendente'
+            if is_gestor:
+                # Gestor pode mudar o status
+                if 'salvar_e_aprovar' in request.POST:
+                    aula_editada.status_aprovacao = 'aprovada'
+                    messages.success(request, f"Aula ID {aula_editada.id} editada e APROVADA!")
+                elif 'rejeitar_aula_action' in request.POST: 
+                    aula_editada.status_aprovacao = 'rejeitada'
+                    messages.success(request, f"Aula ID {aula_editada.id} editada e REJEITADA!")
+                elif 'salvar_pendente' in request.POST:
+                    aula_editada.status_aprovacao = 'pendente' 
+                    messages.success(request, f"Aula ID {aula_editada.id} editada e mantida PENDENTE.")
+                else: 
+                    if not ('salvar_e_aprovar' in request.POST or 'rejeitar_aula_action' in request.POST or 'salvar_pendente' in request.POST):
+                         aula_editada.status_aprovacao = aula.status_aprovacao 
+                    messages.success(request, f"Aula ID {aula_editada.id} editada.")
 
+            else: # Se for professor editando
+                aula_editada.status_aprovacao = 'pendente'                 
+                if hasattr(user, 'professor_profile'):
+                    aula_editada.professor = user.professor_profile
+                messages.success(request, f"Suas edições para a Aula ID {aula_editada.id} foram salvas e estão PENDENTES de aprovação.")
+            
             aula_editada.save()
-            form.save_m2m()
-            return redirect('home')
+            form.save_m2m() 
+            return redirect('detalhe_aula', id=aula_editada.id) 
         else:
-            messages.error(request, "Não foi possível salvar as alterações. Por favor, verifique os erros no formulário.")
-    else: 
+            messages.error(request, "Não foi possível salvar as alterações. Verifique os erros no formulário.")
+    else: # GET request
         form = AddAulaForm(instance=aula)
+        if not is_gestor and 'professor' in form.fields:
+            form.fields['professor'].widget = forms.HiddenInput()
+            # Ou, se quiser mostrar mas não permitir edição:
+            # form.fields['professor'].disabled = True
 
     context = {
         'form': form,
         'aula': aula,
-        'page_title': f"Editar Aula Pendente (ID: {aula.id})",
+        'page_title': f"Editar Aula (ID: {aula.id})",
+        'is_gestor': is_gestor, 
     }
+    # Use o mesmo template de edição, ele será adaptado com base em 'is_gestor'
     return render(request, 'uniescolar/editar_aula_gestor.html', context)
 
 
@@ -267,7 +330,7 @@ def rejeitar_aula_view(request, aula_id):
 
 
 @login_required
-def aula_detail(request, id):
+def aula_detail_view(request, id):
     aula_instance = get_object_or_404(Aula.objects.select_related('disciplina', 'aluno', 'professor__user'), id=id)
     
     user_can_view = False
@@ -305,25 +368,33 @@ def aula_detail(request, id):
 
 
 @login_required
-@require_POST
-
+@require_POST # Garante que esta view só aceite requisições POST
 def excluir_aula(request, aula_id):
     aula = get_object_or_404(Aula, id=aula_id)
     can_delete = False
     user_is_gestor = is_gestor_check(request.user)
-    user_is_professor_of_aula = hasattr(request.user, 'professor_profile') and aula.professor == request.user.professor_profile
-
+    
+    # Verifica se o usuário logado é o professor da aula
+    user_is_professor_of_aula = False
+    if hasattr(request.user, 'professor_profile') and aula.professor == request.user.professor_profile:
+        user_is_professor_of_aula = True
     if user_is_gestor:
         can_delete = True
-    elif user_is_professor_of_aula and aula.status_aprovacao == 'pendente':
+    elif user_is_professor_of_aula and aula.status_aprovacao == 'pendente':        
         can_delete = True
     
     if not can_delete:
-        return JsonResponse({'status': 'erro', 'mensagem': 'Você não tem permissão para excluir esta aula ou o status não permite.'}, status=403)
+        messages.error(request, 'Você não tem permissão para excluir esta aula ou o status da aula não permite a exclusão.')        
+        return redirect('detalhe_aula', id=aula_id) 
+    try:
+        aula_disciplina_nome = aula.disciplina.nome 
+        aula.delete()
+        messages.success(request, f"Aula de '{aula_disciplina_nome}' excluída com sucesso!")
+    except Exception as e:
+        messages.error(request, f"Ocorreu um erro ao tentar excluir a aula: {e}")        
+        return redirect('detalhe_aula', id=aula_id) 
 
-    aula.delete()
-    messages.success(request, "Aula excluída com sucesso!") # Mensagem para o backend
-    return JsonResponse({'status': 'ok', 'mensagem': 'Aula excluída com sucesso!'})
+    return redirect('home')
 
 
 def logout_user(request):
@@ -342,17 +413,17 @@ def register_user(request):
             messages.success(request, 'Cadastro (modelo Usuário) realizado. Para login com perfis, um admin precisa criar seu usuário Django e vincular o perfil.')
             return redirect('home') 
         else:
-            # Passar o formulário com erros de volta para o template
+            
             messages.error(request, 'Erro no formulário de cadastro. Verifique os dados.')
             return render(request, "register.html", {'user_form': user_form})
     else:
         user_form = SignUpForm()
     return render(request, "register.html", {'user_form': user_form})
 
-def aula_detail(request,id):
-    if request.user.is_authenticated:
-        aulas=Aula.objects.get(id=id) # Buscar objeto pelo id
-        return render (request,'aula_detail.html',{'aula_detail':aulas})
-    else:
-        messages.error(request,'Você precisa estar logado')
-        return redirect('home')
+# def aula_detail(request,id):
+#     if request.user.is_authenticated:
+#         aulas=Aula.objects.get(id=id) # Buscar objeto pelo id
+#         return render (request,'aula_detail.html',{'aula_detail':aulas})
+#     else:
+#         messages.error(request,'Você precisa estar logado')
+#         return redirect('home')
