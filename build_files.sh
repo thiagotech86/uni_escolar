@@ -1,3 +1,3 @@
-pip install pipenv
-pipenv install
-python3.13 manage.py collectstatic
+python3.12 pip install pipenv
+pipenv3.12 pipenv install
+python3.12 manage.py collectstatic
