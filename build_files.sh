@@ -1,3 +1,3 @@
-python3.12 pip install pipenv
-python3.12 pipenv install
-python3.12 manage.py collectstatic
+python3.12 -m pip install --upgrade pip
+python3.12 -m pip install -r requirements.txt
+python3.12 manage.py collectstatic --noinput
