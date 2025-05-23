@@ -41,11 +41,16 @@ class AddAulaForm(forms.ModelForm):
     )
 
     data_inicio = forms.DateField(
-        required=True,
-        widget=forms.DateInput(
-            attrs={"placeholder": "Data de início", "class": "form-control", "type": "date"}
-        ),
-        label="Data da Aula"
+    required=True,
+    widget=forms.DateInput(
+        format='%Y-%m-%d',  # <-- ESSENCIAL para que o campo mostre a data corretamente
+        attrs={
+            "placeholder": "Data de início",
+            "class": "form-control",
+            "type": "date"
+        }
+    ),
+    label="Data da Aula"
     )
 
     hora_inicio = forms.TimeField(
