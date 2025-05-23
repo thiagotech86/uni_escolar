@@ -52,42 +52,32 @@
                 
                 <div class="mt-8 flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:items-start sm:justify-between">
                     
-                    <div>
-                        <a href="{% url 'home' %}" class="btn-secondary-custom text-center w-full sm:w-auto px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity duration-150 inline-flex items-center justify-center whitespace-nowrap">
-                            <i class="fas fa-times mr-2"></i>Cancelar
-                        </a>
-                    </div>
+
                     
                     
-                    <div class="flex flex-col items-stretch sm:items-end space-y-2 w-full sm:w-auto">
-                        {% if is_gestor %}
-                            <button type="submit" name="salvar_pendente"
-                                    class="btn-primary-custom text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline hover:opacity-90 transition-opacity duration-150 w-full sm:w-auto inline-flex items-center justify-center whitespace-nowrap">
-                                <i class="fas fa-save mr-2"></i>Salvar (Pendente)
-                            </button>
-                            <div class="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:space-x-2 w-full sm:w-auto">
-                                <button type="submit" name="salvar_e_aprovar"
-                                        class="btn-success-custom text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline hover:opacity-90 transition-opacity duration-150 w-full sm:w-auto inline-flex items-center justify-center whitespace-nowrap">
-                                    <i class="fas fa-check-circle mr-2"></i>Aprovar
-                                </button>
-                                <button type="submit" name="rejeitar_aula_action"
-                                        class="btn-danger-custom text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline hover:opacity-90 transition-opacity duration-150 w-full sm:w-auto inline-flex items-center justify-center whitespace-nowrap">
-                                    <i class="fas fa-times-circle mr-2"></i>Rejeitar
-                                </button>
-                            </div>
-                        {% else %} 
-                            <button type="submit" name="salvar_edicao_professor"
-                                    class="btn-primary-custom text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline hover:opacity-90 transition-opacity duration-150 w-full sm:w-auto inline-flex items-center justify-center whitespace-nowrap">
-                                <i class="fas fa-save mr-2"></i>Salvar Alterações
-                            </button>
-                        {% endif %}
-                    </div>
-                </div>
-            </form>
-        </div>
+    <div class="w-full flex justify-center sm:justify-center mt-4">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
+        {% if is_gestor %}
+            <a href="{% url 'home' %}" class="btn-secondary-custom text-center w-full sm:w-auto px-1 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity duration-150 inline-flex items-center justify-center whitespace-nowrap">
+                <i class="fas fa-times mr-2"></i>Cancelar
+            </a>
+            <button type="submit" name="salvar_pendente"
+                class="btn-primary-custom text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline hover:opacity-90 transition-opacity duration-150">
+                <i class="fas fa-save mr-2"></i>Salvar (Pendente)
+            </button>
+            <button type="submit" name="salvar_e_aprovar"
+                class="btn-success-custom text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline hover:opacity-90 transition-opacity duration-150">
+                <i class="fas fa-check-circle mr-2"></i>Aprovar
+            </button>
+
+        {% else %}
+            <button type="submit" name="salvar_edicao_professor"
+                class="btn-primary-custom text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline hover:opacity-90 transition-opacity duration-150">
+                <i class="fas fa-save mr-2"></i>Salvar Alterações
+            </button>
+        {% endif %}
     </div>
 </div>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const formElements = document.querySelectorAll(
