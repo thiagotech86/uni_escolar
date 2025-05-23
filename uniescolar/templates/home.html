@@ -8,91 +8,163 @@
 <div class="container mx-auto px-4 py-8">
 
     {% if user.is_authenticated %}
-        
-        <h2 class="text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-6 text-center">Minhas Aulas</h2>
 
         
-        <div class="flex flex-col sm:flex-row justify-around items-center text-center mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow">
+        <div class="flex flex-col sm:flex-row justify-around items-center text-center mb-4 p-2 bg-gray-100 dark:bg-gray-800 rounded-lg shadow">
             
-            {% if user_is_professor %} 
-                <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200">
-                    Total de Horas/Aulas Dadas: 
-                    <span class="text-blue-600 dark:text-blue-400">{{ total_horas_aulas_filtradas|format_hours_minutes }}</span>
+            {% if user_is_professor %}
+                
+                <h4 class="p-4 rounded-lg shadow bg-gray-300 dark:bg-gray-100 text-black font-bold text-xl">
+                    Total <br>Horas-Aula <br>
+                    <span class="text-blue-600 dark:text-blue-400 text-2xl">{{ total_horas_aulas_filtradas|format_hours_minutes }}</span>
                 </h4>
+                
+                
             {% elif user_is_responsavel_profile %} 
-                <div class="flex flex-col sm:flex-row sm:space-x-4">
-                    <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2 sm:mb-0">
-                        Horas Contratadas: <span class="text-blue-600 dark:text-blue-400">{{ total_contratado_responsavel|format_hours_minutes }}</span>
-                    </h4>
-                    <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2 sm:mb-0">
-                        Horas Utilizadas: <span class="text-orange-500 dark:text-orange-400">{{ total_utilizado_responsavel|format_hours_minutes }}</span>
-                    </h4>
-                    <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200">
-                        Saldo de Horas: 
-                        <span id="saldoHorasResponsavel" 
-                              class="font-bold {% if saldo_horas_responsavel < 0 %}text-red-600 dark:text-red-400{% else %}text-green-600 dark:text-green-400{% endif %}">
-                              {{ saldo_horas_responsavel|format_hours_minutes }}
-                        </span>
-                    </h4>
-                </div>
+                
+                <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2 sm:mb-0">
+                    Horas Contratadas: <span class="text-blue-600 dark:text-blue-400">{{ horas_contratadas_aluno_filtrado|format_hours_minutes  }}</span>
+                </h4>
+
+                <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2 sm:mb-0">
+                    Horas Utilizadas: <span class="text-orange-500 dark:text-orange-400">{{ horas_utilizadas_aluno_filtrado|format_hours_minutes }}</span>
+                </h4>
+                <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200">
+                    Saldo de Horas: 
+                    <span id="saldoHorasResponsavel" 
+                            class="font-bold {% if saldo_horas_responsavel < 0 %}text-red-600 dark:text-red-400{% else %}text-green-600 dark:text-green-400{% endif %}">
+                            {{ saldo_horas_aluno_filtrado|format_hours_minutes }}
+                    </span>
+                </h4>
+            
             {% elif user_is_gestor %}
-                <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200">
-                    Total de Horas (Aulas Visíveis no Filtro): 
-                    <span class="text-blue-600 dark:text-blue-400">{{ total_horas_aulas_filtradas|format_hours_minutes }}</span>
+                <h4 class="p-4 rounded-lg shadow bg-gray-300 dark:bg-gray-100 text-black font-bold text-xl">
+                    Total <br>horas-aula<br>(filtro)<br>
+                    <span class="text-blue-600 dark:text-blue-400 text-2xl">{{ total_horas_aulas_filtradas|format_hours_minutes }}</span>
                 </h4>
-            {% else %}
-                <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-200">
-                    Visão Geral das Aulas
-                </h4>
-            {% endif %}
+                    <h4 class="p-4 rounded-lg shadow bg-gray-300 dark:bg-gray-100 text-black font-bold text-xl">
+                        Aulas<br> Contratadas<br>(cliente) <br> <span class="text-blue-600 dark:text-blue-400 text-2xl">{{ horas_contratadas_aluno_filtrado|format_hours_minutes  }}</span>
+                    </h4>
+
+                    <h4 class="p-4 rounded-lg shadow bg-gray-300 dark:bg-gray-100 text-black font-bold text-xl">
+                        Horas<br> Utilizadas<br>(Cliente)<br> <span class="text-blue-600 dark:text-orange-400 text-2xl">{{ horas_utilizadas_aluno_filtrado|format_hours_minutes }}</span>
+                    </h4>
+                    <h4 class="p-4 rounded-lg shadow font-bold text-xl
+                    {% if saldo_horas_aluno_filtrado <= 0 %}
+                        bg-red-500 dark:bg-red-800
+                    {% elif saldo_horas_aluno_filtrado <= 10 %}
+                        bg-yellow-200 dark:bg-yellow-800
+                    {% else %}
+                        bg-green-200 dark:bg-green-800
+                    {% endif %}
+                    ">
+                    Saldo<br> Horas-Aula <br>(Cliente)<br>
+                    <span class="text-stone-900 dark:text-stone-400">
+                        {{ saldo_horas_aluno_filtrado|format_hours_minutes }}
+                    </span>
+                    </h4>
+            {%else%}
+            
+                    <h4 class="p-4 rounded-lg shadow bg-gray-300 dark:bg-gray-100 text-black font-bold text-xl">
+                        Aulas <br> Contratadas <br> {{ total_contratado_responsavel|format_hours_minutes  }}
+                    </h4>
+
+                    <h4 class="p-4 rounded-lg shadow bg-green-300 dark:bg-red-500 text-black font-bold text-xl mt-0">
+                        Aulas <br> Realizadas <br> {{ total_utilizado_responsavel|format_hours_minutes }}
+                    </h4>
+                    <h4 class="p-4 rounded-lg shadow font-bold text-xl
+                    {% if saldo_horas_responsavel <= 0 %}
+                        bg-red-500 dark:bg-red-800
+                    
+                    {% elif saldo_horas_responsavel <= 10 %}
+                        bg-yellow-200 dark:bg-yellow-800
+                    {% else %}
+                        font-bold bg-blue-400 dark:bg-blue-800
+                    {% endif %}
+                    ">
+                     {% if saldo_horas_responsavel < 0 %}
+                    <span class="font-bold text-xl text-stone-900 dark:text-red-200">Solicite <br> um pacote</span>
+                    {% else %}
+                        Saldo<br> Horas-Aula <br> 
+                        <span class="font-semibold text-stone-900 dark:text-stone-500">
+                         {{ saldo_horas_responsavel|format_hours_minutes }}
+                        </span>
+                    {% endif %}
+                        </h4>
+                    {% endif %}
         </div>
 
         
         {% if aulas %}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow">
+        <form method="GET" action="{% url 'home' %}" class="mt-0">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-2 bg-gray-100 dark:bg-gray-800 rounded-lg shadow" style="padding: 0%";>
             <div>
-                <label for="dataInicio" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Data de:</label>
-                <input type="date" id="dataInicio" class="form-input-custom w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-50 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                <label for="data_de" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-0">Data de:</label>
+                <input type="date" id="data_de" name="data_de" value="{{ selected_data_de }}" class="form-input-custom w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-50 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
             </div>
             <div>
-                <label for="dataFim" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Até:</label>
-                <input type="date" id="dataFim" class="form-input-custom w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-50 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                <label for="data_ate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-0">Até:</label>
+                <input type="date" id="data_ate" name="data_ate" value="{{ selected_data_ate }}" class="form-input-custom w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-50 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
             </div>
+
             {% if user_is_gestor or user_is_responsavel_profile %} 
             <div>
-                <label for="filtroProfessor" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Professor:</label>
-                <select id="filtroProfessor" class="form-input-custom w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-50 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">Todos</option>
+                <label for="professor" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-0">Professor:</label>
+                <select id="professor" name="professor" class="form-input-custom w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-50 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Todos os professores</option>
+                    {% for professor in todos_professores %}
+                        <option value="{{ professor.pk }}" {% if professor.pk|stringformat:"s" == selected_professor %}selected{% endif %}>
+                            {{ professor.user.get_full_name|default:professor.user.username }}
+                        </option>
+                    {% endfor %}
+
                 </select>
             </div>
             {% endif %}
             {% if user_is_gestor or user_is_professor %} 
             <div>
-                <label for="filtroAluno" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Aluno:</label>
-                <select id="filtroAluno" class="form-input-custom w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-50 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">Todos</option>
+                <label for="aluno"  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Aluno:</label>
+                <select id="aluno" name="aluno" class="form-input-custom w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-50 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Todos os alunos</option>
+                    {% for aluno in todos_alunos %}
+                        <option value="{{ aluno.id }}" {% if aluno.id|stringformat:"s" == selected_aluno %}selected{% endif %}>
+                            {{ aluno.nome }}
+                        </option>
+                    {% endfor %}
+
                 </select>
+
             </div>
+
             {% endif %}
+
         </div>
+        <div class="text-center mt-2">
+            <!-- Botão de Filtrar -->
+            <button type="submit" class="btn btn-primary me-2">Filtrar Aulas</button>
+
+            <!-- Link de Limpar Filtros -->
+            <a href="{% url 'home' %}" class="btn btn-secondary">Limpar Filtros</a>
+        </div>
+        </form>
         {% endif %}
 
-        <hr class="border-t border-gray-300 dark:border-gray-600 my-6">
+        <hr class="border-t border-gray-300 dark:border-gray-600 my-2">
 
         
         <div class="overflow-x-auto bg-white dark:bg-gray-800 shadow-xl rounded-lg">
             <table id="tabelaAulas" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-200 dark:bg-gray-700"> 
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Disciplina</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Data</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Início</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Término</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Aluno</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Professor</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Duração</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Ações</th> {# Centralizado o título da coluna #}
+                        <th class="px-0 py-1 text-center text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Disciplina</th>
+                        <th class="px-0 py-1 text-center text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Data</th>
+                        <th class="px-0 py-1 text-center text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Início</th>
+                        <th class="px-0 py-1 text-center text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Término</th>
+                        <th class="px-0 py-1 text-center text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Aluno</th>
+                        <th class="px-0 py-1 text-center text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Professor</th>
+                        <th class="px-0 py-1 text-center text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Duração</th>
+                        <th class="px-0 py-1 text-center text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Status</th>
+                        <th class="px-0 py-1 text-center text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Ações</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -105,16 +177,16 @@
                             {% else %}text-gray-800 dark:text-gray-200    
                             {% endif %} hover:bg-gray-100 dark:hover:bg-gray-700/80 transition-colors duration-150">
                             
-                            <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %}">{{ aula_item.disciplina.nome }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %} filtro-data" data-date="{{ aula_item.data_inicio|date:'Y-m-d' }}">{{ aula_item.data_inicio|date:"d/m/Y" }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %} hora-inicio">{{ aula_item.hora_inicio|time:"H:i" }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %} hora-fim">{{ aula_item.hora_fim|time:"H:i" }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %}">{{ aula_item.aluno.nome }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %}">{{ aula_item.professor.user.username }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %} duracao" data-decimal-value="{{ aula_item.duracao_calculada }}">
+                            <td class="px-0 py-2 text-center align-middle whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %}">{{ aula_item.disciplina.nome }}</td>
+                            <td class="px-0 py-2 text-center align-middle whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %} filtro-data" data-date="{{ aula_item.data_inicio|date:'Y-m-d' }}">{{ aula_item.data_inicio|date:"d/m/Y" }}</td>
+                            <td class="px-0 py-2 text-center align-middle whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %} hora-inicio">{{ aula_item.hora_inicio|time:"H:i" }}</td>
+                            <td class="px-0 py-2 text-center align-middle whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %} hora-fim">{{ aula_item.hora_fim|time:"H:i" }}</td>
+                            <td class="px-0 py-2 text-center align-middle whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %}">{{ aula_item.aluno.nome }}</td>
+                            <td class="px-0 py-2 text-center align-middle whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %}">{{ aula_item.professor.user.username }}</td>
+                            <td class="px-0 py-2 text-center align-middle whitespace-nowrap text-sm {% if aula_item.status_aprovacao %}current-color{% else %}text-inherit{% endif %} duracao" data-decimal-value="{{ aula_item.duracao_calculada }}">
                                 {{ aula_item.duracao_calculada|format_hours_minutes }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold 
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-center align-middle
                                 {% if aula_item.status_aprovacao == 'aprovada' %}text-green-700 dark:text-green-300
                                 {% elif aula_item.status_aprovacao == 'pendente' %}text-orange-700 dark:text-orange-300
                                 {% elif aula_item.status_aprovacao == 'rejeitada' %}text-red-700 dark:text-red-300
@@ -123,7 +195,7 @@
                                 {{ aula_item.get_status_aprovacao_display }}
                             </td>
                             
-                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <td class="px-2 py-4 whitespace-nowrap text-sm">
                                 <div class="flex items-center justify-center space-x-2"> {# justify-center para centralizar os botões #}
                                     
                                     <a href="{% url 'detalhe_aula' aula_item.id %}" 
@@ -134,7 +206,7 @@
                                     
                                     {% if user_is_gestor or user_is_professor and user.professor_profile == aula_item.professor and aula_item.status_aprovacao == 'pendente' %}
                                     <a href="{% url 'update_aula' aula_item.id %}" 
-                                       class="btn-primary-custom text-white font-semibold py-1.5 px-3 rounded-md shadow-sm hover:shadow-md transition-all duration-150 ease-in-out inline-flex items-center text-xs" title="Editar">
+                                       class="btn-primary-custom text-white font-semibold py-1.5 px-1 rounded-md shadow-sm hover:shadow-md transition-all duration-150 ease-in-out inline-flex items-center text-xs" title="Editar">
                                         <i class="fas fa-edit mr-1 sm:mr-2"></i><span class="hidden sm:inline">Editar</span>
                                     </a>
                                     {% endif %}
@@ -143,23 +215,18 @@
                                     {% if user_is_gestor and aula_item.status_aprovacao == 'pendente' %}
                                         <form action="{% url 'aprovar_aula' aula_item.id %}" method="POST" class="inline">
                                             {% csrf_token %}
-                                            <button type="submit" class="btn-success-custom text-white font-semibold py-1.5 px-2.5 rounded-md shadow-sm hover:shadow-md transition-all duration-150 inline-flex items-center text-xs" title="Aprovar">
+                                            <button type="submit" class="btn-success-custom text-white font-semibold py-1.5 px-1 rounded-md shadow-sm hover:shadow-md transition-all duration-150 inline-flex items-center text-xs" title="Aprovar">
                                                 <i class="fas fa-check mr-1 sm:mr-2"></i><span class="hidden sm:inline">Aprovar</span>
                                             </button>
                                         </form>
-                                        <form action="{% url 'rejeitar_aula' aula_item.id %}" method="POST" class="inline">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn-warning-custom text-white font-semibold py-1.5 px-2.5 rounded-md shadow-sm hover:shadow-md transition-all duration-150 inline-flex items-center text-xs" title="Rejeitar">
-                                                <i class="fas fa-times mr-1 sm:mr-2"></i><span class="hidden sm:inline">Rejeitar</span>
-                                            </button>
-                                        </form>
+
                                     {% endif %}
                                     
                                     {% if user_is_gestor or user_is_professor and user.professor_profile == aula_item.professor and aula_item.status_aprovacao == 'pendente' %}
                                     <form action="{% url 'delete_aula' aula_item.id %}" method="POST" class="inline-block" onsubmit="return confirm('Tem certeza que deseja excluir esta aula?');">
                                         {% csrf_token %}
                                         <button type="submit" 
-                                                class="btn-danger-custom text-white font-semibold py-1.5 px-2.5 rounded-md shadow-sm hover:shadow-md transition-all duration-150 ease-in-out inline-flex items-center text-xs" title="Excluir">
+                                                class="btn-danger-custom text-white font-semibold py-1.5 px-1 rounded-md shadow-sm hover:shadow-md transition-all duration-150 ease-in-out inline-flex items-center text-xs" title="Excluir">
                                             <i class="fas fa-trash mr-1"></i><span class="hidden sm:inline">Excluir</span>
                                         </button>
                                     </form>
@@ -174,7 +241,11 @@
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="9" class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300 text-center">Nenhuma aula encontrada para seu perfil ou filtros.</td>
+                            <td colspan="9" class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300 text-center">Nenhuma aula encontrada.</td>
+                        </div>
+                        <div class="d-flex justify-content-center" style="margin: 0%;">
+                        <a href="{% url 'home' %}" class="btn btn-secondary">Limpar Filtros</a>
+                        </div>
                         </tr>
                     {% endif %}
                 </tbody>
@@ -202,12 +273,12 @@
                     </div>
                 {% endif %}
                 <div class="form-card px-6 py-8 dark:bg-gray-800 rounded-lg shadow-xl"> 
-                    <h2 class="text-3xl font-bold text-center text-black dark:text-white mb-2">Bem-vindo!</h2>
+                    <h2 class="text-3xl font-bold text-center text-black dark:text-white mb-2">Bem-vindos!</h2>
                     <p class="text-center text-gray-600 dark:text-gray-400 mb-8">Faça login para continuar</p>
                     <form method="post" action="{% url 'home' %}"> 
                         {% csrf_token %}
                         <div class="mb-5">
-                            <label for="username-home" class="block text-black dark:text-gray-300 text-sm font-bold mb-2">Usuário (Usuário):</label>
+                            <label for="username-home" class="block text-black dark:text-gray-300 text-sm font-bold mb-2">Usuário:</label>
                             <input type="text" id="username-home" name="username" placeholder="Insira o usuário" class="shadow-sm appearance-none border border-gray-300 rounded w-full py-3 px-3 bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out dark:bg-gray-700 dark:text-gray-50 dark:border-gray-600 dark:placeholder-gray-400" required>
                         </div>
                         <div class="mb-6">
@@ -215,7 +286,7 @@
                             <input type="password" id="password-home" name="password" placeholder="Insira a senha" class="shadow-sm appearance-none border border-gray-300 rounded w-full py-3 px-3 bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out dark:bg-gray-700 dark:text-gray-50 dark:border-gray-600 dark:placeholder-gray-400" required>
                         </div>
                         <div class="mb-6">
-                            <label for="userType-home" class="block text-black dark:text-gray-300 text-sm font-bold mb-2">Eu sou:</label>
+                            <label for="userType-home" class="block text-black dark:text-gray-300 text-sm font-bold mb-2">Perfil de usuário:</label>
                             <select id="userType-home" name="user_type" class="shadow-sm appearance-none border border-gray-300 rounded w-full py-3 px-3 bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out leading-tight dark:bg-gray-700 dark:text-gray-50 dark:border-gray-600">
                                 <option value="aluno_responsavel" class="text-black bg-white dark:text-gray-200 dark:bg-gray-600">Responsável</option>
                                 <option value="professor" class="text-black bg-white dark:text-gray-200 dark:bg-gray-600">Professor</option>
@@ -225,7 +296,7 @@
                         <div class="flex items-center justify-center mt-8">
                             <button type="submit" class="btn-primary-custom w-full py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline hover:opacity-90 transition-opacity duration-150">Entrar</button>
                         </div>
-                         <p class="text-center text-gray-600 dark:text-gray-400 mt-6 text-sm">Não tem uma conta? <a href="{% url 'register' %}" class="font-medium text-blue-600 dark:text-blue-400 hover:underline">Cadastre-se</a></p>
+                         <!--<p class="text-center text-gray-600 dark:text-gray-400 mt-6 text-sm">Não tem uma conta? <a href="{% url 'register' %}" class="font-medium text-blue-600 dark:text-blue-400 hover:underline">Cadastre-se</a></p>-->
                     </form>
                 </div>
             </div>

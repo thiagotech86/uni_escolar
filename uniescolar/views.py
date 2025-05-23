@@ -20,6 +20,22 @@ def is_gestor_check(user):
 
 # Tela Home / Login
 def home(request):
+    horas_contratadas_aluno_filtrado = None
+    horas_utilizadas_aluno_filtrado = None
+    saldo_horas_aluno_filtrado = None
+    aulas_list = []
+    total_horas_aulas_filtradas = timedelta()
+    horas_contratadas_por_aluno_dict = {}
+    total_contratado_todos_alunos_val = 0.0
+    total_contratado_responsavel_logado = 0
+    total_utilizado_pelo_responsavel_logado = 0
+    saldo_total_horas_responsavel = 0
+    user_is_gestor_profile = False
+    user_is_professor_profile = False 
+    user_is_responsavel_profile = False
+    lista_de_alunos_para_filtro = Aluno.objects.all().order_by('nome')
+    lista_de_professores_para_filtro = Professor.objects.all().order_by('user__first_name', 'user__last_name')
+
     if request.method == "POST": # Tentativa de Login
         username_from_form = request.POST.get('username')
         password_from_form = request.POST.get('password')
@@ -73,6 +89,7 @@ def home(request):
 
     
     lista_de_alunos_para_filtro = Aluno.objects.all().order_by('nome') # Ou filtre conforme necessário
+    lista_de_professores_para_filtro = Professor.objects.all().order_by('user__first_name', 'user__last_name')
 
     if request.user.is_authenticated:
         user_is_gestor_profile = is_gestor_check(request.user)
@@ -81,7 +98,7 @@ def home(request):
 
         aulas_queryset = Aula.objects.none()
         
-        # Exemplo:
+        
         if user_is_gestor_profile:
             aulas_queryset = Aula.objects.all()
         elif user_is_professor_profile:
@@ -101,6 +118,7 @@ def home(request):
         data_de_str = request.GET.get('data_de')
         data_ate_str = request.GET.get('data_ate')
         aluno_id_str = request.GET.get('aluno')
+        professor_id_str = request.GET.get('professor') # NOVO: Pegando o ID do professor do GET
 
         if data_de_str:
             try:
@@ -123,13 +141,50 @@ def home(request):
             except ValueError:
                 messages.error(request, "ID de aluno inválido para filtro.")
 
+    
+        # NOVO: Filtro por Professor
+        if professor_id_str:
+            if user_is_gestor_profile: # Apenas gestores podem filtrar por qualquer professor
+                try:
+                    professor_id = int(professor_id_str)
+                    aulas_queryset = aulas_queryset.filter(professor__pk=professor_id)
+                except ValueError:
+                    messages.error(request, "ID de professor inválido para filtro.")
+            elif user_is_professor_profile and str(request.user.professor_profile.id) != professor_id_str:
+                # Impede que um professor tente filtrar aulas de outro professor
+                messages.warning(request, "Você só pode visualizar suas próprias aulas.")
+                # O queryset já está filtrado para o professor logado, então não precisamos fazer nada
+                # Se ele tentar filtrar por outro ID, o filtro já estará aplicado corretamente
+
+         # Ordenação e prefetch de objetos relacionados para otimização
         aulas_queryset = aulas_queryset.select_related('disciplina', 'aluno', 'professor__user').order_by('-data_inicio', '-hora_inicio')
+        horas_contratadas_aluno_filtrado = None
+        horas_utilizadas_aluno_filtrado = None
+        saldo_horas_aluno_filtrado = None
 
 
+        if aluno_id_str:
+            try:
+                aluno_filtrado = Aluno.objects.get(pk=int(aluno_id_str))
+
+                # ① horas contratadas (somatório dos pacotes do responsável)
+                horas_contratadas_aluno_filtrado = aluno_filtrado.horas_contratadas()
+
+                # ② horas efetivamente utilizadas (apenas aulas aprovadas)
+                horas_utilizadas_aluno_filtrado = aluno_filtrado.horas_utilizadas()
+
+                # ③ saldo
+                saldo_horas_aluno_filtrado = (
+                    horas_contratadas_aluno_filtrado - horas_utilizadas_aluno_filtrado
+                )
+            except (ValueError, Aluno.DoesNotExist):
+                messages.error(request, "Aluno não encontrado para calcular horas.")
+
+
+         # Cálculo do total de horas das aulas filtradas
         for aula_instance in aulas_queryset:
             aula_instance.duracao_calculada = 0.0
             if aula_instance.hora_inicio and aula_instance.hora_fim and aula_instance.data_inicio:
-                
                 dia_para_calculo = aula_instance.data_inicio
                 try:
                     datetime_inicio = datetime.combine(dia_para_calculo, aula_instance.hora_inicio)
@@ -137,14 +192,19 @@ def home(request):
                     if datetime_fim > datetime_inicio:
                         duracao_aula_timedelta = datetime_fim - datetime_inicio
                         
+                        # A soma só considera aulas aprovadas para responsáveis, mas todas para gestores e o próprio professor
                         if aula_instance.status_aprovacao == 'aprovada' or \
                            user_is_gestor_profile or \
                            (user_is_professor_profile and hasattr(request.user, 'professor_profile') and aula_instance.professor == request.user.professor_profile):
                             total_horas_aulas_filtradas += duracao_aula_timedelta
+                        
                         aula_instance.duracao_calculada = round(duracao_aula_timedelta.total_seconds() / 3600, 2)
                 except TypeError:
                     aula_instance.duracao_calculada = 0.0
             aulas_list.append(aula_instance)
+
+
+        # Cálculo de horas contratadas e utilizadas
 
         for aluno_obj in Aluno.objects.all(): 
             try:
@@ -176,6 +236,7 @@ def home(request):
     context = {
         'aulas': aulas_list,
         'todos_alunos': lista_de_alunos_para_filtro, 
+        'todos_professores': lista_de_professores_para_filtro, # NOVO: Para o filtro de professor no template
         'total_horas_aulas_filtradas': round(total_horas_aulas_filtradas.total_seconds() / 3600, 2),
         'horas_contratadas_por_aluno_json': json.dumps(horas_contratadas_por_aluno_dict),
         'total_contratado_todos_alunos_json': json.dumps(total_contratado_todos_alunos_val),
@@ -184,9 +245,18 @@ def home(request):
         'total_contratado_responsavel': total_contratado_responsavel_logado if user_is_responsavel_profile else None,
         'total_utilizado_responsavel': total_utilizado_pelo_responsavel_logado if user_is_responsavel_profile else None,
         'saldo_horas_responsavel': saldo_total_horas_responsavel if user_is_responsavel_profile else None,
-        'request': request 
-    }
+        'request': request, # Passar o request para o template é útil para manter os filtros selecionados
+        'selected_aluno': request.GET.get('aluno', ''), # Para manter o aluno selecionado no filtro
+        'selected_professor': request.GET.get('professor', ''), # Para manter o professor selecionado no filtro
+        'selected_data_de': request.GET.get('data_de', ''), # Para manter a data de selecionada no filtro
+        'selected_data_ate': request.GET.get('data_ate', ''), # Para manter a data até selecionada no filtro
+        'user_is_gestor_profile': user_is_gestor_profile,  # alias p/ template
+        'horas_contratadas_aluno_filtrado': horas_contratadas_aluno_filtrado,
+        'horas_utilizadas_aluno_filtrado': horas_utilizadas_aluno_filtrado,
+        'saldo_horas_aluno_filtrado': saldo_horas_aluno_filtrado,
+        }
     return render(request, 'home.html', context)
+    
 
 @login_required
 def add_aula(request):
@@ -294,7 +364,7 @@ def update_aula_view(request, aula_id):
     context = {
         'form': form,
         'aula': aula,
-        'page_title': f"Editar Aula (ID: {aula.id})",
+        'page_title': f"Editar Aula",
         'is_gestor': is_gestor, 
     }
     # Use o mesmo template de edição, ele será adaptado com base em 'is_gestor'

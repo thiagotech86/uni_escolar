@@ -1,15 +1,20 @@
-<nav class="bg-blue-600 dark:bg-blue-700 shadow-md">
+{% load static %}
+<nav style="background-color: #47cfc6;" class="shadow-md">
     <div class="container mx-auto px-4">
-        <div class="flex items-center justify-between h-16">
+        <div class="flex items-center justify-between h-15">
             <div class="flex-shrink-0">
-                <a href="{% url 'home' %}" class="text-white text-xl font-bold">Universo Escolar</a>
-            </div>
+                <a href="{% url 'home' %}" class="flex items-center space-x-2 text-white text-xl font-bold">
+    <img src="{% static 'images/logo.png' %}" alt="Logo" class="h-15 w-auto">
+    
+</a>
+
+    </div>
  
             
             <div class="hidden md:flex items-center space-x-4">
                 
                 
-                <button id="headerDarkModeIcon" class="text-gray-200 hover:text-white text-xl focus:outline-none" aria-label="Alternar Modo Escuro/Claro">
+                <button id="headerDarkModeIcon" class="text-gray-200 hover:text-white text-2xl focus:outline-none" aria-label="Alternar Modo Escuro/Claro">
                     <i class="fas fa-moon"></i> 
                 </button>
  
@@ -17,13 +22,14 @@
                 
                 {% if user.is_authenticated %}
                     {% if can_add_aula_permission %}
-                        <a href="{% url 'add_aula' %}" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Cadastrar Aula</a>
+                        
+                        <a href="{% url 'add_aula' %}" class="p-4 rounded-lg  font-bold text-xl">Cadastrar Aula</a>
                     {% endif %}
-                    <a href="{% url 'logout' %}" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Logout</a>
+                    <a href="{% url 'logout' %}" class=" p-4 rounded-lg  font-bold text-xl">Logout</a>
                 {% else %}
                     
                     
-                    <a href="{% url 'home' %}" class="text-gray-200 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
+                    <a href="{% url 'home' %}" class="p-4 rounded-lg  font-bold text-xl">Login</a>
                 {% endif %}
             </div>
  

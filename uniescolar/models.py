@@ -33,9 +33,21 @@ class Responsavel(models.Model):
     profissao = models.CharField(max_length=255)
 
     def __str__(self):
+# 1) Nome do responsável
         if self.user:
-            return f"Responsável: {self.user.username} ({self.CPF})"
-        return f"Responsável: (Sem usuário Django associado) ({self.CPF})"
+            nome_resp = f"{self.user.first_name} {self.user.last_name}".strip() or self.user.username
+        else:
+            nome_resp = "Responsável sem usuário"
+
+        # 2) Nomes dos alunos dependentes
+        alunos = self.alunos_dependentes.all()          # usa o related_name
+        if alunos.exists():
+            nomes_alunos = ", ".join(aluno.nome for aluno in alunos)
+        else:
+            nomes_alunos = "Sem alunos vinculados"
+
+        # 3) String final
+        return f"{nome_resp} – Aluno(s): {nomes_alunos}"
 
 
 class Professor(models.Model):
@@ -135,7 +147,8 @@ class Aluno(models.Model):
         return round(total_segundos / 3600, 2)
 
     def __str__(self):
-        return self.nome
+        responsavel_nome = str(self.responsavel) if self.responsavel else "Sem responsável"
+        return f"{self.nome}"
 
 class PacoteHora(models.Model):
     id = models.AutoField(primary_key=True)
