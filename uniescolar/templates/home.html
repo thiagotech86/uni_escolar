@@ -109,7 +109,7 @@
 
             {% if user_is_gestor or user_is_responsavel_profile %} 
             <div>
-                <label for="professor" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-0">Professor:</label>
+                <label for="professor" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-0">Professor(a):</label>
                 <select id="professor" name="professor" class="form-input-custom w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-50 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                     <option value="">Todos os professores</option>
                     {% for professor in todos_professores %}
@@ -123,7 +123,7 @@
             {% endif %}
             {% if user_is_gestor or user_is_professor %} 
             <div>
-                <label for="aluno"  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Aluno:</label>
+                <label for="aluno"  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Aluno(a):</label>
                 <select id="aluno" name="aluno" class="form-input-custom w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-50 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                     <option value="">Todos os alunos</option>
                     {% for aluno in todos_alunos %}
@@ -160,8 +160,8 @@
                         <th class="px-0 py-1 text-center text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Data</th>
                         <th class="px-0 py-1 text-center text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Início</th>
                         <th class="px-0 py-1 text-center text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Término</th>
-                        <th class="px-0 py-1 text-center text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Aluno</th>
-                        <th class="px-0 py-1 text-center text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Professor</th>
+                        <th class="px-0 py-1 text-center text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Aluno(a)</th>
+                        <th class="px-0 py-1 text-center text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Professor(a)</th>
                         <th class="px-0 py-1 text-center text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Duração</th>
                         <th class="px-0 py-1 text-center text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Status</th>
                         <th class="px-0 py-1 text-center text-xs font-medium text-gray-900 dark:text-gray-50 uppercase tracking-wider">Ações</th>
@@ -278,7 +278,7 @@
                     <form method="post" action="{% url 'home' %}"> 
                         {% csrf_token %}
                         <div class="mb-5">
-                            <label for="username-home" class="block text-black dark:text-gray-300 text-sm font-bold mb-2">Usuário:</label>
+                            <label for="username-home" class="block text-black dark:text-gray-300 text-sm font-bold mb-2">Usuário(a):</label>
                             <input type="text" id="username-home" name="username" placeholder="Insira o usuário" class="shadow-sm appearance-none border border-gray-300 rounded w-full py-3 px-3 bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out dark:bg-gray-700 dark:text-gray-50 dark:border-gray-600 dark:placeholder-gray-400" required>
                         </div>
                         <div class="mb-6">
